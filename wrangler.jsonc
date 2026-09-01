@@ -9,9 +9,15 @@
   "secrets": {
     "required": ["GITHUB_TOKEN"]
   },
+  "r2_buckets": [
+    {
+      "binding": "PORTFOLIO_ASSETS",
+      "bucket_name": "images-portfolio"
+    }
+  ],
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": ["/api/*", "/images/me-pic.jpg"]
   }
 }

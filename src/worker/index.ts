@@ -1,11 +1,32 @@
 interface Env {
   GITHUB_TOKEN: string;
   GITHUB_USERNAME: string;
+  PORTFOLIO_ASSETS: {
+    get(key: string): Promise<{
+      body: ReadableStream;
+      httpMetadata?: { contentType?: string };
+    } | null>;
+  };
 }
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === "/images/me-pic.jpg") {
+      const portrait = await env.PORTFOLIO_ASSETS.get("me-pic.jpg");
+
+      if (!portrait) {
+        return new Response("Not found", { status: 404 });
+      }
+
+      return new Response(portrait.body, {
+        headers: {
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Content-Type": portrait.httpMetadata?.contentType ?? "image/jpeg",
+        },
+      });
+    }
 
     if (url.pathname !== "/api/github/contributions") {
       return new Response("Not found", { status: 404 });
