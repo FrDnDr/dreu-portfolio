@@ -9,14 +9,16 @@ export type Experience = {
   period: string; role: string; organization: string; description: string;
 };
 
+import resumeUrl from "../../documents/DREU-FRANCIS-DANIEL-RESUME.pdf?url";
+
 export const portfolio = {
-  name: "Francis Daniel Dreu", shortName: "FD.", location: "PHILIPPINES", availability: "FREELANCE / FULL-TIME",
-  email: "dreufrancisdaniel@gmail.com", phone: "[PHONE]", resume: "#", githubUsername: "FrDnDr",
+  name: "Francis Daniel Dreu", shortName: "FRANCIS DREU", location: "THE PHILIPPINES", availability: "REMOTE OPPORTUNITIES",
+  email: "dreufrancisdaniel@gmail.com", phone: "[PHONE]", resume: resumeUrl, githubUsername: "FrDnDr",
   github: "https://github.com/FrDnDr", linkedin: "[LINKEDIN URL]", behance: "[BEHANCE URL]",
-  headline: ["I TURN DATA, IDEAS,", "AND INTERFACES", "INTO DIGITAL PRODUCTS."],
-  intro: "I'm a multidisciplinary technologist working across analytics, design, and software development — turning complex problems into useful digital experiences.",
-  bio: "I'm a multidisciplinary professional interested in understanding problems from multiple perspectives. I use data to discover what is happening, design to determine how an experience should work, and development to turn those ideas into real products.",
-  aboutDetail: "My work connects insight with execution: from an early question through the interface, prototype, and working product. Replace this paragraph with a short personal introduction.",
+  headline: ["I BUILD THINGS", "THAT SOLVE", "PROBLEMS."],
+  intro: "I’m Francis — a software developer and builder focused on creating data-driven products, automated systems, and thoughtful digital experiences.",
+  bio: "I like working where software, data, and design overlap.",
+  aboutDetail: "I enjoy taking messy problems, understanding how they work, and turning them into useful systems or products. My work ranges from web applications and dashboards to automation and data workflows — with iteration built into the process.",
   stats: [{ value: "[YEARS]", label: "YEARS EXPERIENCE" }, { value: "[00]", label: "PROJECTS COMPLETED" }, { value: "[00]", label: "TECHNOLOGIES" }, { value: "[00]", label: "GITHUB REPOSITORIES" }],
   roles: [
     { title: "DATA ANALYST", short: "ANALYZE", slug: "data", headline: ["TURNING RAW DATA", "INTO CLEAR DECISIONS."], description: "I explore, clean, analyze, and visualize data to uncover patterns, explain performance, and support better decisions.", skills: ["Python", "SQL", "Excel", "Power BI", "Tableau", "Pandas", "NumPy", "Data Cleaning"] },
