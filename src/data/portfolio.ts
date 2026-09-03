@@ -9,11 +9,9 @@ export type Experience = {
   period: string; role: string; organization: string; description: string;
 };
 
-import resumeUrl from "../../documents/DREU-FRANCIS-DANIEL-RESUME.pdf?url";
-
 export const portfolio = {
   name: "Francis Daniel Dreu", shortName: "FRANCIS DREU", location: "THE PHILIPPINES", availability: "REMOTE OPPORTUNITIES",
-  email: "dreufrancisdaniel@gmail.com", phone: "[PHONE]", resume: resumeUrl, githubUsername: "FrDnDr",
+  email: "dreufrancisdaniel@gmail.com", phone: "[PHONE]", resume: "/DREU-FRANCIS-DANIEL-RESUME.pdf", githubUsername: "FrDnDr",
   github: "https://github.com/FrDnDr", linkedin: "[LINKEDIN URL]", behance: "[BEHANCE URL]",
   headline: ["I BUILD THINGS", "THAT SOLVE", "PROBLEMS."],
   intro: "I’m Francis — a software developer and builder focused on creating data-driven products, automated systems, and thoughtful digital experiences.",
