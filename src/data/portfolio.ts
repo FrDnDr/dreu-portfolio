@@ -1,8 +1,25 @@
 export type Category = "data" | "ui" | "mobile" | "web";
 
+export type ProjectPlatform = {
+  name: string;
+  type: "mobile" | "web" | "data" | "ui";
+};
+
+export type ProjectLinks = {
+  github: string | null;
+  live: string | null;
+  figma: string | null;
+  behance: string | null;
+  mobile: string | null;
+  admin: string | null;
+};
+
 export type Project = {
-  index: string; title: string; slug: string; category: Category; year: string; description: string; image?: string;
-  technologies: string[]; github?: string; liveUrl?: string; overview: string; problem: string; approach: string; solution: string;
+  index: string; title: string; slug: string; year: string; type: string; categories: string[];
+  tagline: string; description: string; role: string[]; technologies: string[];
+  platforms: ProjectPlatform[]; links: ProjectLinks; cover: string; gallery: string[];
+  caseStudy: { overview: string; problem: string; goals: string[]; approach: string; solution: string; outcome: string };
+  highlights: string[];
 };
 
 export type Experience = {
@@ -26,7 +43,7 @@ export const portfolio = {
   ],
   projects: ["data", "ui", "mobile", "web"].flatMap((category) => [1, 2, 3].map((number) => ({
     index: `${String(number).padStart(2, "0")}`, title: `[${category.toUpperCase()} PROJECT ${String(number).padStart(2, "0")}]`, slug: `${category}-project-${String(number).padStart(2, "0")}`,
-    category: category as Category, year: "[YEAR]", description: "[PROJECT DESCRIPTION] — add a concise statement of the problem, the work, and the value created.", technologies: ["[TOOL 01]", "[TOOL 02]", "[TOOL 03]"], overview: "[PROJECT OVERVIEW]", problem: "[PROBLEM TO SOLVE]", approach: "[RESEARCH, PROCESS, OR METHODOLOGY]", solution: "[SOLUTION AND OUTCOME]", github: "", liveUrl: ""
+    year: "[YEAR]", type: "[PROJECT TYPE]", categories: [category.toUpperCase()], tagline: "[SHORT PROJECT TAGLINE]", description: "[PROJECT DESCRIPTION] — add a concise statement of the problem, the work, and the value created.", role: ["[YOUR ROLE]"], technologies: ["[TOOL 01]", "[TOOL 02]", "[TOOL 03]"], platforms: [{ name: "[PLATFORM NAME]", type: category as Category }], links: { github: null, live: null, figma: null, behance: null, mobile: null, admin: null }, cover: "", gallery: [], caseStudy: { overview: "[PROJECT OVERVIEW]", problem: "[PROBLEM TO SOLVE]", goals: [], approach: "[RESEARCH, PROCESS, OR METHODOLOGY]", solution: "[SOLUTION]", outcome: "[OUTCOME]" }, highlights: []
   }))),
   skillGroups: { DATA: ["Python", "SQL", "Power BI", "Excel", "Pandas", "Tableau"], DESIGN: ["Figma", "Prototyping", "Design Systems", "Wireframing"], MOBILE: ["Flutter", "Dart", "Firebase", "React Native", "Expo"], WEB: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Node.js"], "AI TOOLS": ["Codex", "Claude Code", "Cursor", "Google Antigravity"], TOOLS: ["Git", "GitHub", "VS Code", "Supabase", "Google Sheets"] },
   experience: [
