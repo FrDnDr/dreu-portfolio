@@ -9,6 +9,47 @@ interface Env {
   };
 }
 
+type ContributionDay = { date: string; contributionCount: number };
+type ContributionCalendar = { totalContributions: number; weeks: { contributionDays: ContributionDay[] }[] };
+
+const contributionQuery = `
+  query Contributions($login: String!, $from: DateTime!, $to: DateTime!) {
+    user(login: $login) {
+      contributionsCollection(from: $from, to: $to) {
+        contributionCalendar {
+          totalContributions
+          weeks {
+            contributionDays {
+              date
+              contributionCount
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const isoDate = (date: Date) => date.toISOString().slice(0, 10);
+const addDays = (date: Date, days: number) => new Date(date.getTime() + days * 86_400_000);
+
+function calendarFromDays(from: Date, to: Date, counts: Map<string, number>): ContributionCalendar {
+  const firstDay = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate()));
+  const lastDay = new Date(Date.UTC(to.getUTCFullYear(), to.getUTCMonth(), to.getUTCDate()));
+  const firstVisibleDay = addDays(firstDay, -firstDay.getUTCDay());
+  const weeks: { contributionDays: ContributionDay[] }[] = [];
+
+  for (let weekStart = firstVisibleDay; weekStart <= lastDay; weekStart = addDays(weekStart, 7)) {
+    weeks.push({ contributionDays: Array.from({ length: 7 }, (_, index) => {
+      const day = addDays(weekStart, index);
+      const date = isoDate(day);
+      return { date, contributionCount: date >= isoDate(firstDay) && date <= isoDate(lastDay) ? counts.get(date) ?? 0 : 0 };
+    }) });
+  }
+
+  return { totalContributions: [...counts.values()].reduce((total, count) => total + count, 0), weeks };
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -38,81 +79,51 @@ export default {
       return new Response("Not found", { status: 404 });
     }
 
-    const to = new Date();
-    const from = new Date(to);
-    from.setFullYear(from.getFullYear() - 1);
-
-    const query = `
-      query Contributions($login: String!, $from: DateTime!, $to: DateTime!) {
-        user(login: $login) {
-          contributionsCollection(from: $from, to: $to) {
-            contributionCalendar {
-              totalContributions
-              weeks {
-                contributionDays {
-                  date
-                  contributionCount
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
-
-    const response = await fetch("https://api.github.com/graphql", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.GITHUB_TOKEN}`,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json",
-        "User-Agent": "dreu-portfolio",
-      },
-      body: JSON.stringify({
-        query,
-        variables: {
-          login: env.GITHUB_USERNAME,
-          from: from.toISOString(),
-          to: to.toISOString(),
-        },
-      }),
-    });
-
-    const responseText = await response.text();
-    let payload: {
-      data?: { user?: { contributionsCollection?: { contributionCalendar?: unknown } } };
-      errors?: { message?: string }[];
-    };
-
     try {
-      payload = JSON.parse(responseText);
-    } catch {
-      console.error("GitHub contribution request returned a non-JSON response", {
-        status: response.status,
-        body: responseText.slice(0, 160),
-      });
-      return Response.json(
-        { error: "GitHub contributions are temporarily unavailable." },
-        { status: 502 },
-      );
+    const now = new Date();
+    const requestedYear = Number(url.searchParams.get("year"));
+    const currentYear = now.getFullYear();
+    const startYear = Number.isInteger(requestedYear) && requestedYear >= 2008 && requestedYear <= currentYear
+      ? requestedYear
+      : currentYear;
+    const from = new Date(Date.UTC(startYear, 0, 1));
+    const to = startYear === currentYear ? now : new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999));
+
+    const ranges: { from: Date; to: Date }[] = [];
+    for (let rangeStart = from; rangeStart < to;) {
+      const nextYear = new Date(Date.UTC(rangeStart.getUTCFullYear() + 1, rangeStart.getUTCMonth(), rangeStart.getUTCDate()));
+      const rangeEnd = nextYear < to ? nextYear : to;
+      ranges.push({ from: rangeStart, to: rangeEnd });
+      rangeStart = rangeEnd;
     }
 
-    const calendar = payload.data?.user?.contributionsCollection?.contributionCalendar;
-
-    if (!response.ok || payload.errors || !calendar) {
-      console.error("GitHub contribution request failed", {
-        status: response.status,
-        errors: payload.errors?.map(({ message }) => message),
+    const responses = await Promise.all(ranges.map(async (range) => {
+      const response = await fetch("https://api.github.com/graphql", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, Accept: "application/vnd.github+json", "Content-Type": "application/json", "User-Agent": "dreu-portfolio" },
+        body: JSON.stringify({ query: contributionQuery, variables: { login: env.GITHUB_USERNAME, from: range.from.toISOString(), to: range.to.toISOString() } }),
       });
-      return Response.json(
-        { error: "GitHub contributions are temporarily unavailable." },
-        { status: 502 },
-      );
+      const payload = await response.json() as { data?: { user?: { contributionsCollection?: { contributionCalendar?: ContributionCalendar } } }; errors?: { message?: string }[] };
+      const calendar = payload.data?.user?.contributionsCollection?.contributionCalendar;
+      if (!response.ok || payload.errors || !calendar) throw new Error(payload.errors?.map(({ message }) => message).join(", ") || `GitHub returned ${response.status}`);
+      return calendar;
+    }));
+
+    const counts = new Map<string, number>();
+    for (const calendar of responses) for (const week of calendar.weeks) for (const day of week.contributionDays) {
+      if (day.date >= isoDate(from) && day.date <= isoDate(to)) counts.set(day.date, day.contributionCount);
     }
 
     return Response.json(
-      calendar,
+      calendarFromDays(from, to, counts),
       { headers: { "Cache-Control": "public, max-age=300" } },
     );
+    } catch (error) {
+    console.error("GitHub contribution request failed", error);
+    return Response.json(
+      { error: "GitHub contributions are temporarily unavailable." },
+      { status: 502 },
+    );
+    }
   },
 };

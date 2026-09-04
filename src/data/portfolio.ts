@@ -11,13 +11,13 @@ export type Experience = {
 
 export const portfolio = {
   name: "Francis Daniel Dreu", shortName: "FRANCIS DREU", location: "THE PHILIPPINES", availability: "REMOTE OPPORTUNITIES",
-  email: "dreufrancisdaniel@gmail.com", phone: "[PHONE]", resume: "/DREU-FRANCIS-DANIEL-RESUME.pdf", githubUsername: "FrDnDr",
-  github: "https://github.com/FrDnDr", linkedin: "[LINKEDIN URL]", behance: "[BEHANCE URL]",
+  email: "dreufrancisdaniel@gmail.com", phone: "09086993264", resume: "/DREU-FRANCIS-DANIEL-RESUME.pdf", githubUsername: "FrDnDr",
+  github: "https://github.com/FrDnDr", linkedin: "www.linkedin.com/in/fddreu", behance: "[BEHANCE URL]",
   headline: ["I BUILD THINGS", "THAT SOLVE", "PROBLEMS."],
   intro: "I’m Francis — a software developer and builder focused on creating data-driven products, automated systems, and thoughtful digital experiences.",
   bio: "I like working where software, data, and design overlap.",
   aboutDetail: "I enjoy taking messy problems, understanding how they work, and turning them into useful systems or products. My work ranges from web applications and dashboards to automation and data workflows — with iteration built into the process.",
-  stats: [{ value: "[YEARS]", label: "YEARS EXPERIENCE" }, { value: "[00]", label: "PROJECTS COMPLETED" }, { value: "[00]", label: "TECHNOLOGIES" }, { value: "[00]", label: "GITHUB REPOSITORIES" }],
+  stats: [{ value: "[01]", label: "YEARS EXPERIENCE" }, { value: "[25]", label: "TECHNOLOGIES" }],
   roles: [
     { title: "DATA ANALYST", short: "ANALYZE", slug: "data", headline: ["TURNING RAW DATA", "INTO CLEAR DECISIONS."], description: "I explore, clean, analyze, and visualize data to uncover patterns, explain performance, and support better decisions.", skills: ["Python", "SQL", "Excel", "Power BI", "Tableau", "Pandas", "NumPy", "Data Cleaning"] },
     { title: "UI DESIGNER", short: "DESIGN", slug: "ui", headline: ["DESIGNING DIGITAL", "EXPERIENCES WITH INTENT."], description: "I translate problems and user needs into interfaces that are clear, intuitive, functional, and visually deliberate.", skills: ["Figma", "Wireframing", "Prototyping", "Design Systems", "Responsive Design", "User Flows"] },
@@ -28,7 +28,7 @@ export const portfolio = {
     index: `${String(number).padStart(2, "0")}`, title: `[${category.toUpperCase()} PROJECT ${String(number).padStart(2, "0")}]`, slug: `${category}-project-${String(number).padStart(2, "0")}`,
     category: category as Category, year: "[YEAR]", description: "[PROJECT DESCRIPTION] — add a concise statement of the problem, the work, and the value created.", technologies: ["[TOOL 01]", "[TOOL 02]", "[TOOL 03]"], overview: "[PROJECT OVERVIEW]", problem: "[PROBLEM TO SOLVE]", approach: "[RESEARCH, PROCESS, OR METHODOLOGY]", solution: "[SOLUTION AND OUTCOME]", github: "", liveUrl: ""
   }))),
-  skillGroups: { DATA: ["Python", "SQL", "Power BI", "Excel", "Pandas", "Tableau"], DESIGN: ["Figma", "Prototyping", "Design Systems", "Wireframing"], MOBILE: ["Flutter", "Dart", "Firebase", "React Native"], WEB: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Node.js"], TOOLS: ["Git", "GitHub", "VS Code"] },
+  skillGroups: { DATA: ["Python", "SQL", "Power BI", "Excel", "Pandas", "Tableau"], DESIGN: ["Figma", "Prototyping", "Design Systems", "Wireframing"], MOBILE: ["Flutter", "Dart", "Firebase", "React Native", "Expo"], WEB: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Node.js"], "AI TOOLS": ["Codex", "Claude Code", "Cursor", "Google Antigravity"], TOOLS: ["Git", "GitHub", "VS Code", "Supabase", "Google Sheets"] },
   experience: [
     {
       period: "JANUARY 2026 — JULY 2026",
