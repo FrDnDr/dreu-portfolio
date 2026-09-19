@@ -54,23 +54,28 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    const portraitKeys: Record<string, { key: string; contentType: string }> = {
+    const assetKeys: Record<string, { key: string; contentType: string; cacheControl?: string }> = {
       "/images/me-pic.jpg": { key: "me-pic.jpg", contentType: "image/jpeg" },
       "/images/me-pic-pixel.png": { key: "me-pic-pixel.png", contentType: "image/png" },
+      "/projects/nobogey-platform-ecosystem-cover.png": {
+        key: "projects/nobogey-platform-ecosystem-cover.png",
+        contentType: "image/png",
+        cacheControl: "public, max-age=3600",
+      },
     };
-    const portraitAsset = portraitKeys[url.pathname];
+    const asset = assetKeys[url.pathname];
 
-    if (portraitAsset) {
-      const portrait = await env.PORTFOLIO_ASSETS.get(portraitAsset.key);
+    if (asset) {
+      const object = await env.PORTFOLIO_ASSETS.get(asset.key);
 
-      if (!portrait) {
+      if (!object) {
         return new Response("Not found", { status: 404 });
       }
 
-      return new Response(portrait.body, {
+      return new Response(object.body, {
         headers: {
-          "Cache-Control": "public, max-age=31536000, immutable",
-          "Content-Type": portrait.httpMetadata?.contentType ?? portraitAsset.contentType,
+          "Cache-Control": asset.cacheControl ?? "public, max-age=31536000, immutable",
+          "Content-Type": object.httpMetadata?.contentType ?? asset.contentType,
         },
       });
     }

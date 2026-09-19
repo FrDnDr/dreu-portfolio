@@ -41,10 +41,24 @@ export const portfolio = {
     { title: "MOBILE DEVELOPER", short: "BUILD MOBILE", slug: "mobile", headline: ["BUILDING EXPERIENCES", "THAT LIVE IN YOUR POCKET."], description: "I build responsive, maintainable mobile applications that translate product ideas and interface designs into working experiences.", skills: ["Flutter", "Dart", "React Native", "Firebase", "REST APIs", "State Management"] },
     { title: "WEB DEVELOPER", short: "BUILD WEB", slug: "web", headline: ["BUILDING FOR", "THE MODERN WEB."], description: "I create responsive web experiences that combine maintainable engineering with thoughtful interface design.", skills: ["HTML", "CSS", "JavaScript", "TypeScript", "React", "Next.js", "Tailwind CSS"] },
   ],
-  projects: ["data", "ui", "mobile", "web"].flatMap((category) => [1, 2, 3].map((number) => ({
-    index: `${String(number).padStart(2, "0")}`, title: `[${category.toUpperCase()} PROJECT ${String(number).padStart(2, "0")}]`, slug: `${category}-project-${String(number).padStart(2, "0")}`,
-    year: "[YEAR]", type: "[PROJECT TYPE]", categories: [category.toUpperCase()], tagline: "[SHORT PROJECT TAGLINE]", description: "[PROJECT DESCRIPTION] — add a concise statement of the problem, the work, and the value created.", role: ["[YOUR ROLE]"], technologies: ["[TOOL 01]", "[TOOL 02]", "[TOOL 03]"], platforms: [{ name: "[PLATFORM NAME]", type: category as Category }], links: { github: null, live: null, figma: null, behance: null, mobile: null, admin: null }, cover: "", gallery: [], caseStudy: { overview: "[PROJECT OVERVIEW]", problem: "[PROBLEM TO SOLVE]", goals: [], approach: "[RESEARCH, PROCESS, OR METHODOLOGY]", solution: "[SOLUTION]", outcome: "[OUTCOME]" }, highlights: []
-  }))),
+  projects: [
+    {
+      index: "01", title: "NoBogey — Multi-Platform Golf Caddie Booking System", slug: "nobogey-caddie-booking", year: "2026", type: "MULTI-PLATFORM PRODUCT", categories: ["MOBILE", "WEB", "UI"],
+      tagline: "A connected booking and operations experience for golfers, caddies, and course teams.",
+      description: "A multi-platform golf caddie booking system with a public landing page, golfer and caddie mobile experiences, and an admin dashboard for course operations.",
+      role: ["Frontend / Mobile Developer", "UI Implementation"], technologies: ["React Native", "Expo", "Expo Router", "TypeScript", "React", "Vite"],
+      platforms: [{ name: "Golfer mobile app", type: "mobile" }, { name: "Caddie mobile app", type: "mobile" }, { name: "Admin dashboard", type: "web" }, { name: "Public landing page", type: "web" }], links: { github: null, live: null, figma: null, behance: null, mobile: null, admin: null },
+      cover: "/projects/nobogey-platform-ecosystem-cover.png", gallery: ["/projects/nobogey-landing-page.jpg", "/projects/nobogey-golfer-app.jpg", "/projects/nobogey-caddie-app.jpg", "/projects/nobogey-admin-dashboard.jpg"],
+      caseStudy: {
+        overview: "A connected product system for golfers, caddies, and course teams: a public landing page, role-specific mobile experiences, and an admin operations dashboard.",
+        problem: "Booking a golf round with a caddie involves golfers, caddies, and course staff, so each group needs a clear view of the same workflow without losing role-specific context.",
+        goals: ["Clarify the golfer booking sequence", "Support caddie and course-team workflows", "Keep assignment expectations transparent", "Maintain a consistent design system across platforms"],
+        approach: "Mapped the service across four surfaces: a public landing page, a golfer flow from course to tee time to preferred caddie, a caddie dashboard, and an admin scheduler for course operations.",
+        solution: "Built responsive mobile and web interfaces with shared visual language, guided onboarding around real controls, and a booking summary that describes a named caddie as a preference rather than a guarantee.",
+        outcome: "Delivered a working frontend flow for review and testing. Current catalog and assignment data are fixture/mock-backed pending backend integration."
+      }, highlights: ["Public product landing page", "Golfer booking flow", "Caddie dashboard", "Admin scheduling dashboard", "Role-aware responsive UI"]
+    }
+  ] satisfies Project[],
   skillGroups: { DATA: ["Python", "SQL", "Power BI", "Excel", "Pandas", "Tableau"], DESIGN: ["Figma", "Prototyping", "Design Systems", "Wireframing"], MOBILE: ["Flutter", "Dart", "Firebase", "React Native", "Expo"], WEB: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Node.js"], "AI TOOLS": ["Codex", "Claude Code", "Cursor", "Google Antigravity"], TOOLS: ["Git", "GitHub", "VS Code", "Supabase", "Google Sheets"] },
   experience: [
     {
