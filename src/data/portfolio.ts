@@ -65,7 +65,7 @@ export const portfolio = {
       period: "JANUARY 2026 — JULY 2026",
       role: "Data Analyst Intern / Dashboard Developer",
       organization: "Mvolo · Remote",
-      description: "Analyzed financial data and managed data-entry workflows to support reliable business reporting. Developed an API-based ETL pipeline that automated data retrieval and reduced manual data entry by 70%, then cleaned, transformed, and integrated multi-source data into PostgreSQL and the Mvolo Central Command Centre dashboard.",
+      description: "Analyzed financial data and identified a recurring manual-work bottleneck. Initiated an API-based ETL pipeline during the internship, reducing manual data entry by 70%, and integrated its outputs into the Mvolo Central Command Centre dashboard. Built a Shopify profitability dashboard using Python, the Shopify API, DuckDB, and JavaScript to report revenue, profit, and margins. From May to July 2026, also served as Technical Lead Intern for LayerInsights, a project under Mvolo, overseeing development from the ground up. Integrated Shopify and Klaviyo OAuth data connectors and implemented a live Stripe payment workflow for platform billing.",
     },
     {
       period: "MAY 2025 — JULY 2025",
