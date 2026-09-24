@@ -34,7 +34,7 @@ export const portfolio = {
   intro: "I’m Francis — a software developer and builder focused on creating data-driven products, automated systems, and thoughtful digital experiences.",
   bio: "I like working where software, data, and design overlap.",
   aboutDetail: "I enjoy taking messy problems, understanding how they work, and turning them into useful systems or products. My work ranges from web applications and dashboards to automation and data workflows — with iteration built into the process.",
-  stats: [{ value: "[01]", label: "YEARS EXPERIENCE" }, { value: "[25]", label: "TECHNOLOGIES" }],
+  stats: [{ value: "[01]", label: "YEARS EXPERIENCE" }, { value: "[26]", label: "TECHNOLOGIES" }],
   roles: [
     { title: "DATA ANALYST", short: "ANALYZE", slug: "data", headline: ["TURNING RAW DATA", "INTO CLEAR DECISIONS."], description: "I explore, clean, analyze, and visualize data to uncover patterns, explain performance, and support better decisions.", skills: ["Python", "SQL", "Excel", "Power BI", "Tableau", "Pandas", "NumPy", "Data Cleaning"] },
     { title: "UI DESIGNER", short: "DESIGN", slug: "ui", headline: ["DESIGNING DIGITAL", "EXPERIENCES WITH INTENT."], description: "I translate problems and user needs into interfaces that are clear, intuitive, functional, and visually deliberate.", skills: ["Figma", "Wireframing", "Prototyping", "Design Systems", "Responsive Design", "User Flows"] },
@@ -43,11 +43,27 @@ export const portfolio = {
   ],
   projects: [
     {
-      index: "01", title: "NoBogey — Multi-Platform Golf Caddie Booking System", slug: "nobogey-caddie-booking", year: "2026", type: "MULTI-PLATFORM PRODUCT", categories: ["MOBILE", "WEB", "UI"],
+      index: "01", title: "Mvolo — Shopify Financial ETL Pipeline", slug: "mvolo-shopify-etl", year: "2026", type: "DATA ENGINEERING / ANALYTICS", categories: ["DATA", "WEB"],
+      tagline: "An API-based pipeline that turned manual Shopify financial reporting into dashboard-ready data.",
+      description: "An internship project that extracted Shopify financial data, transformed it into profitability metrics, and loaded it into DuckDB for reporting in Mvolo Central Command Centre.",
+      role: ["Data Analyst Intern", "Dashboard Developer"], technologies: ["Python", "Shopify API", "DuckDB", "JavaScript"],
+      platforms: [{ name: "ETL pipeline", type: "data" }, { name: "Profitability dashboard", type: "web" }], links: { github: null, live: "https://project---mvolo.francisdreu.workers.dev/shopify", figma: null, behance: null, mobile: null, admin: null },
+      cover: "", gallery: [],
+      caseStudy: {
+        overview: "An API-based ETL pipeline built during my Mvolo internship to replace recurring manual financial-data entry and provide a clearer view of Shopify profitability.",
+        problem: "Financial reporting relied on repetitive manual entry, making the process slow and leaving limited time for analysis. The dashboard also needed a reliable way to use Shopify data for revenue, profit, and margin reporting.",
+        goals: ["Reduce repetitive manual data entry", "Extract financial data directly from Shopify", "Create consistent profitability metrics", "Make transformed data available to the Central Command Centre dashboard"],
+        approach: "Mapped the manual reporting flow, then built a pipeline that retrieved data through the Shopify API, prepared it for analysis in Python, and loaded the results into DuckDB for dashboard consumption.",
+        solution: "Created a repeatable extract, transform, and load workflow for Shopify financial data. The resulting dataset supported revenue, profit, and margin reporting in the Mvolo Central Command Centre dashboard.",
+        outcome: "Reduced manual data entry by 70% and gave the team a dashboard-ready data source for Shopify profitability reporting. This case study represents the internship implementation; the cover artwork will be added separately."
+      }, highlights: ["Shopify API extraction", "Python data transformation", "DuckDB analytical storage", "Revenue, profit, and margin reporting", "70% reduction in manual entry"]
+    },
+    {
+      index: "02", title: "NoBogey — Multi-Platform Golf Caddie Booking System", slug: "nobogey-caddie-booking", year: "2026", type: "MULTI-PLATFORM PRODUCT", categories: ["MOBILE", "WEB", "UI"],
       tagline: "A connected booking and operations experience for golfers, caddies, and course teams.",
       description: "A multi-platform golf caddie booking system with a public landing page, golfer and caddie mobile experiences, and an admin dashboard for course operations.",
       role: ["Frontend / Mobile Developer", "UI Implementation"], technologies: ["React Native", "Expo", "Expo Router", "TypeScript", "React", "Vite"],
-      platforms: [{ name: "Golfer mobile app", type: "mobile" }, { name: "Caddie mobile app", type: "mobile" }, { name: "Admin dashboard", type: "web" }, { name: "Public landing page", type: "web" }], links: { github: null, live: null, figma: null, behance: null, mobile: null, admin: null },
+      platforms: [{ name: "Golfer mobile app", type: "mobile" }, { name: "Caddie mobile app", type: "mobile" }, { name: "Admin dashboard", type: "web" }, { name: "Public landing page", type: "web" }], links: { github: null, live: "https://nobogeyofficial.com/", figma: null, behance: null, mobile: null, admin: null },
       cover: "/projects/nobogey-platform-ecosystem-cover.png", gallery: ["/projects/nobogey-landing-page.jpg", "/projects/nobogey-golfer-app.jpg", "/projects/nobogey-caddie-app.jpg", "/projects/nobogey-admin-dashboard.jpg"],
       caseStudy: {
         overview: "A connected product system for golfers, caddies, and course teams: a public landing page, role-specific mobile experiences, and an admin operations dashboard.",
@@ -59,7 +75,7 @@ export const portfolio = {
       }, highlights: ["Public product landing page", "Golfer booking flow", "Caddie dashboard", "Admin scheduling dashboard", "Role-aware responsive UI"]
     }
   ] satisfies Project[],
-  skillGroups: { DATA: ["Python", "SQL", "Power BI", "Excel", "Pandas", "Tableau"], DESIGN: ["Figma", "Prototyping", "Design Systems", "Wireframing"], MOBILE: ["Flutter", "Dart", "Firebase", "React Native", "Expo"], WEB: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Node.js"], "AI TOOLS": ["Codex", "Claude Code", "Cursor", "Google Antigravity"], TOOLS: ["Git", "GitHub", "VS Code", "Supabase", "Google Sheets"] },
+  skillGroups: { DATA: ["Python", "SQL", "Power BI", "Excel", "Pandas", "Tableau"], DESIGN: ["Figma", "Canva", "Prototyping", "Design Systems", "Wireframing"], MOBILE: ["Flutter", "Dart", "Firebase", "React Native", "Expo"], WEB: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Node.js"], "AI TOOLS": ["Codex", "Claude Code", "Cursor", "Google Antigravity"], TOOLS: ["Git", "GitHub", "VS Code", "Supabase", "Google Sheets"] },
   experience: [
     {
       period: "JANUARY 2026 — JULY 2026",
