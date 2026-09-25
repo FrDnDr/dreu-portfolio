@@ -36,12 +36,23 @@ jobs:
       - name: Build portfolio
         run: npm run build
 
-      - name: Deploy to Cloudflare
-        if: github.event_name != 'pull_request'
+      - name: Deploy to Cloudflare Workers
+        # Pull requests only validate the build. Production deploys come from main.
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: 4.135.0
+          command: deploy
+          # wrangler.jsonc declares this Worker binding as required.
+          secrets: |
+            GITHUB_TOKEN
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GITHUB_TOKEN: ${{ secrets.WORKER_GITHUB_TOKEN }}
+
+      - name: Link production site
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |
-          npx wrangler deploy
           echo "### Production" >> "$GITHUB_STEP_SUMMARY"
           echo "[Open the deployed portfolio](https://dreu-portfolio.francisdreu.workers.dev)" >> "$GITHUB_STEP_SUMMARY"
