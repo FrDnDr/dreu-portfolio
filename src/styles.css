@@ -143,6 +143,7 @@ body{letter-spacing:.012em}
 .live-project-link,.theme-dark .live-project-link{border-color:#10100f!important;background:#10100f!important;color:#f1f0eb!important}.live-project-link:hover,.theme-dark .live-project-link:hover{border-color:var(--lime)!important;background:#10100f!important;color:var(--lime)!important;box-shadow:0 0 0 3px rgba(199,244,48,.2),0 8px 22px rgba(199,244,48,.16);transform:translateY(-2px)}.live-project-link:focus-visible{outline-color:var(--lime)}
 
 /* Phone hero: keep the headline, portrait, and introduction in normal flow. */
+.work-project__visual{display:block;width:100%}
 @media(max-width:620px){
   .site-header{gap:10px}
   .brand{padding:0;white-space:nowrap}
