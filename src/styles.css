@@ -162,3 +162,7 @@ body{letter-spacing:.012em}
 }
 
 .contact-verification{margin-top:20px;min-width:0}.contact-verification>div{width:100%;min-height:65px}
+
+.project-art>video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#10100f}
+.project-art:has(>video) .project-art__grid,.project-art:has(>video) .project-art__shape{display:none}
+.project-art:has(>video)>strong{font-size:clamp(16px,2vw,28px);background:rgba(16,16,15,.8);padding:8px 12px}

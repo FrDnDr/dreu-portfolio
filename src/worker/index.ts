@@ -2,7 +2,8 @@ interface Env {
   GITHUB_TOKEN: string;
   GITHUB_USERNAME: string;
   PORTFOLIO_ASSETS: {
-    get(key: string): Promise<{
+    head(key: string): Promise<{ size: number; httpEtag: string } | null>;
+    get(key: string, options?: { range: { offset: number; length: number } }): Promise<{
       body: ReadableStream;
       httpMetadata?: { contentType?: string };
     } | null>;
@@ -63,6 +64,43 @@ export default {
         cacheControl: "public, max-age=3600",
       },
     };
+    if (url.pathname === "/projects/etl-pipeline.mp4") {
+      if (request.method !== "GET" && request.method !== "HEAD") {
+        return new Response(null, { status: 405, headers: { Allow: "GET, HEAD" } });
+      }
+      const key = "projects/etl-pipeline.mp4";
+      const metadata = await env.PORTFOLIO_ASSETS.head(key);
+      if (!metadata) return new Response("Not found", { status: 404 });
+      const headers = new Headers({
+        "Content-Type": "video/mp4",
+        "Cache-Control": "public, max-age=3600",
+        "Accept-Ranges": "bytes",
+        "Content-Length": String(metadata.size),
+        ETag: metadata.httpEtag,
+      });
+      if (request.method === "HEAD") return new Response(null, { headers });
+
+      const requestedRange = request.headers.get("Range");
+      const ifRange = request.headers.get("If-Range");
+      let range: { offset: number; length: number } | undefined;
+      if (requestedRange && (!ifRange || ifRange === metadata.httpEtag)) {
+        const match = /^bytes=(\d*)-(\d*)$/.exec(requestedRange);
+        const start = match?.[1] ? Number(match[1]) : Math.max(0, metadata.size - Number(match?.[2]));
+        const end = match?.[1] && match[2] ? Math.min(Number(match[2]), metadata.size - 1) : metadata.size - 1;
+        if (!match || (!match[1] && !match[2]) || !Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || start >= metadata.size || end < start) {
+          headers.set("Content-Range", `bytes */${metadata.size}`);
+          headers.set("Content-Length", "0");
+          return new Response(null, { status: 416, headers });
+        }
+        range = { offset: start, length: end - start + 1 };
+        headers.set("Content-Range", `bytes ${start}-${end}/${metadata.size}`);
+        headers.set("Content-Length", String(range.length));
+      }
+      const object = await env.PORTFOLIO_ASSETS.get(key, range ? { range } : undefined);
+      if (!object) return new Response("Not found", { status: 404 });
+      return new Response(object.body, { status: range ? 206 : 200, headers });
+    }
+
     const asset = assetKeys[url.pathname];
 
     if (asset) {
