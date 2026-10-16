@@ -160,3 +160,5 @@ body{letter-spacing:.012em}
   .hero__actions .text-link{min-height:44px;align-items:center;padding:8px 0;font-size:11px;gap:8px}
   .hero__active{position:static;display:block;writing-mode:horizontal-tb;margin-top:28px;font-size:9px}
 }
+
+.contact-verification{margin-top:20px;min-width:0}.contact-verification>div{width:100%;min-height:65px}

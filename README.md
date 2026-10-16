@@ -19,3 +19,23 @@ placeholders there without touching the layout components.
 npm install
 npm run dev
 ```
+
+## Contact form bot protection
+
+The contact form uses Cloudflare Turnstile and sends `cf-turnstile-response`
+to Formspree. The public site key is configured in `src/components/Turnstile.tsx`.
+The secret belongs only in Formspree's CAPTCHA settings, never in this repository.
+
+Before enabling enforcement in Formspree:
+
+1. Allow `frdndr.com` and `www.frdndr.com` in the Cloudflare widget settings.
+   Allow any workers.dev hostname separately if submissions should work there.
+2. Deploy the frontend integration.
+3. Select Turnstile in Formspree, enter the matching secret, and enable CAPTCHA.
+4. Verify a real submission reaches the inbox and a submission without a token
+   is rejected. Check the spam folder as well.
+
+Local development needs an allowed development hostname or a Cloudflare test
+site key paired with its test secret in a separate test form. Never use test
+keys for production protection. Expired/failed challenges offer a retry; failed
+submissions refresh the challenge because tokens are single-use.

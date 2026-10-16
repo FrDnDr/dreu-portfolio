@@ -4,6 +4,7 @@ import Lenis from "lenis";
 import { ArrowDownRight, ArrowUpRight, Menu, X } from "lucide-react";
 import { portfolio, type Project } from "./data/portfolio";
 import { GithubSection } from "./components/GithubSection";
+import { Turnstile } from "./components/Turnstile";
 
 const scrollTo = (id: string) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
 
@@ -48,6 +49,8 @@ function Skills() {
 function Experience() { const reduce = useReducedMotion(); return <section id="experience" className="experience section-shell"><div className="experience__head"><div className="section-label mono">04 / EXPERIENCE <span>CHALLENGE → CONTRIBUTION → IMPACT</span></div><h2>WORK THAT<br /><em>MOVES FORWARD.</em></h2></div><div className="experience__timeline">{portfolio.experience.map((item, i) => <motion.article key={`${item.period}-${item.role}`} initial={reduce ? false : { opacity: 0, x: -46 }} whileInView={{ opacity: 1, x: 0 }} whileHover={reduce ? undefined : { x: 12 }} viewport={{ once: true, amount: .35 }} transition={{ duration: .55, delay: reduce ? 0 : i * .14, ease: "easeOut" }}><span className="mono">{item.period}</span><div><h3>{item.role}</h3><strong>{item.organization}</strong><p>{item.description}</p></div></motion.article>)}</div></section>; }
 
 function Contact() {
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [verificationAttempt, setVerificationAttempt] = useState(0);
   const sessionKey = "portfolio-contact-submitted";
   const [submitted, setSubmitted] = useState(() => sessionStorage.getItem(sessionKey) === "true");
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
@@ -55,7 +58,7 @@ function Contact() {
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (submitted || status === "sending") return;
+    if (submitted || status === "sending" || !turnstileToken) return;
 
     const data = new FormData(event.currentTarget);
     const name = String(data.get("name") ?? "");
@@ -72,6 +75,8 @@ function Contact() {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
+    // Formspree must validate this token with the secret configured in its dashboard.
+    data.set("cf-turnstile-response", turnstileToken);
     data.append("_subject", `Portfolio inquiry from ${name}`);
     setStatus("sending");
 
@@ -80,6 +85,7 @@ function Contact() {
         method: "POST",
         body: data,
         headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(20_000),
       });
 
       if (!response.ok) throw new Error("Formspree submission failed");
@@ -87,10 +93,14 @@ function Contact() {
       setSubmitted(true);
     } catch {
       setStatus("error");
+    } finally {
+      // Tokens are single-use; a retry needs a fresh challenge even after network failure.
+      setTurnstileToken("");
+      setVerificationAttempt(value => value + 1);
     }
   }
 
-  return <section id="contact" className="contact"><div className="section-label mono">CONTACT / 08 <span>LET'S MAKE IT USEFUL</span></div><h2>LET'S BUILD<br />SOMETHING<br /><em>USEFUL.</em></h2><div className="contact__grid"><div className="contact-links"><a href={`mailto:${portfolio.email}`}>EMAIL <span>{portfolio.email}</span><ArrowUpRight /></a><a href={`tel:${portfolio.phone}`}>PHONE <span>{portfolio.phone}</span><ArrowUpRight /></a><a href={portfolio.github} target="_blank" rel="noreferrer">GITHUB <span>OPEN PROFILE</span><ArrowUpRight /></a><a href={portfolio.linkedin} target="_blank" rel="noreferrer">LINKEDIN <span>CONNECT</span><ArrowUpRight /></a></div><form noValidate onSubmit={submit}><label>FULL NAME<input required name="name" aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "contact-name-error" : undefined} placeholder="[YOUR FULL NAME]" /></label>{errors.name && <p id="contact-name-error" className="contact-form-error">{errors.name}</p>}<label>EMAIL<input required name="email" type="email" aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "contact-email-error" : undefined} placeholder="[YOUR EMAIL]" /></label>{errors.email && <p id="contact-email-error" className="contact-form-error">{errors.email}</p>}<label>MESSAGE<textarea required name="message" rows={3} aria-invalid={Boolean(errors.message)} aria-describedby={errors.message ? "contact-message-error" : "contact-message-hint"} placeholder="[TELL ME ABOUT YOUR PROJECT]" /></label>{errors.message ? <p id="contact-message-error" className="contact-form-error">{errors.message}</p> : <p id="contact-message-hint" className="contact-form-hint">10–150 words</p>}<button type="submit" disabled={submitted || status === "sending"}>{submitted ? "MESSAGE SENT — ONE PER SESSION" : status === "sending" ? "SENDING…" : "SEND MESSAGE →"}</button><small>{submitted ? "Thanks — your message has been sent." : status === "error" ? "Message could not be sent. Please try again." : "Your message will be sent directly to Francis."}</small></form></div></section>;
+  return <section id="contact" className="contact"><div className="section-label mono">CONTACT / 08 <span>LET'S MAKE IT USEFUL</span></div><h2>LET'S BUILD<br />SOMETHING<br /><em>USEFUL.</em></h2><div className="contact__grid"><div className="contact-links"><a href={`mailto:${portfolio.email}`}>EMAIL <span>{portfolio.email}</span><ArrowUpRight /></a><a href={`tel:${portfolio.phone}`}>PHONE <span>{portfolio.phone}</span><ArrowUpRight /></a><a href={portfolio.github} target="_blank" rel="noreferrer">GITHUB <span>OPEN PROFILE</span><ArrowUpRight /></a><a href={portfolio.linkedin} target="_blank" rel="noreferrer">LINKEDIN <span>CONNECT</span><ArrowUpRight /></a></div><form noValidate onSubmit={submit}><label>FULL NAME<input required name="name" aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "contact-name-error" : undefined} placeholder="[YOUR FULL NAME]" /></label>{errors.name && <p id="contact-name-error" className="contact-form-error">{errors.name}</p>}<label>EMAIL<input required name="email" type="email" aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "contact-email-error" : undefined} placeholder="[YOUR EMAIL]" /></label>{errors.email && <p id="contact-email-error" className="contact-form-error">{errors.email}</p>}<label>MESSAGE<textarea required name="message" rows={3} aria-invalid={Boolean(errors.message)} aria-describedby={errors.message ? "contact-message-error" : "contact-message-hint"} placeholder="[TELL ME ABOUT YOUR PROJECT]" /></label>{errors.message ? <p id="contact-message-error" className="contact-form-error">{errors.message}</p> : <p id="contact-message-hint" className="contact-form-hint">10–150 words</p>}{!submitted && <Turnstile key={verificationAttempt} onToken={setTurnstileToken} />}<button type="submit" disabled={submitted || status === "sending" || !turnstileToken}>{submitted ? "MESSAGE SENT — ONE PER SESSION" : status === "sending" ? "SENDING…" : "SEND MESSAGE →"}</button><small>{submitted ? "Thanks — your message has been sent." : status === "error" ? "Message could not be sent. Please try again." : "Your message will be sent directly to Francis."}</small></form></div></section>;
 }
 
 function CaseStudy({ project, close }: { project: Project; close: () => void }) { return <motion.main className="case-study" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><header><button className="brand" onClick={close}>← {portfolio.shortName}</button><button className="text-link" onClick={close}>BACK TO WORK</button></header><section className="case-study__hero"><div className="section-label mono">{project.categories.join(" / ")} / {project.year} <span>CASE STUDY / {project.index}</span></div><h1>{project.title}</h1><p>{project.description}</p><ProjectArt project={project} large /></section><section className="case-study__details">{[["01 — OVERVIEW", project.caseStudy.overview], ["02 — PROBLEM", project.caseStudy.problem], ["03 — APPROACH", project.caseStudy.approach], ["04 — SOLUTION", project.caseStudy.solution], ["05 — OUTCOME", project.caseStudy.outcome]].map(([label, body]) => <article key={label}><span className="mono">{label}</span><p>{body}</p></article>)}<article><span className="mono">06 — TECHNOLOGIES</span><p>{project.technologies.join(" / ")}</p></article></section><footer><button onClick={close}>← ALL WORK</button>{project.links.github && <a href={project.links.github} target="_blank" rel="noreferrer">GITHUB ↗</a>}<LiveProjectLink project={project} /></footer></motion.main>; }

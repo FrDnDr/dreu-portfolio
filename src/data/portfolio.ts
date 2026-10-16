@@ -27,7 +27,7 @@ export type Experience = {
 };
 
 export const portfolio = {
-  version: "v2.0",
+  version: "v2.1",
   name: "Francis Daniel Dreu", shortName: "FRANCIS DREU", location: "THE PHILIPPINES", availability: "REMOTE OPPORTUNITIES",
   email: "dreufrancisdaniel@gmail.com", phone: "09086993264", resume: "/Resume%20-%20Francis%20Daniel%20Dreu.pdf", githubUsername: "FrDnDr",
   github: "https://github.com/FrDnDr", linkedin: "https://www.linkedin.com/in/fddreu", behance: "[BEHANCE URL]",
