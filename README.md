@@ -1,4 +1,4 @@
-# Multidisciplinary Portfolio
+# Dreu Portfolio
 
 An editable Vite + React portfolio mockup for data, UI design, mobile, and web work.
 
