@@ -1,3 +1,5 @@
+import mvoloEtlCover from "../assets/mvolo-etl-cover.png";
+
 export type Category = "data" | "ui" | "mobile" | "web";
 
 export type ProjectPlatform = {
@@ -17,7 +19,7 @@ export type ProjectLinks = {
 export type Project = {
   index: string; title: string; slug: string; year: string; type: string; categories: string[];
   tagline: string; description: string; role: string[]; technologies: string[];
-  platforms: ProjectPlatform[]; links: ProjectLinks; cover: string; coverVideo?: string; gallery: string[];
+  platforms: ProjectPlatform[]; links: ProjectLinks; cover: string; gallery: string[];
   caseStudy: { overview: string; problem: string; goals: string[]; approach: string; solution: string; outcome: string };
   highlights: string[];
 };
@@ -27,7 +29,7 @@ export type Experience = {
 };
 
 export const portfolio = {
-  version: "v3.0",
+  version: "v3.1",
   name: "Francis Daniel Dreu", shortName: "FRANCIS DREU", location: "THE PHILIPPINES", availability: "REMOTE OPPORTUNITIES",
   email: "dreufrancisdaniel@gmail.com", phone: "09086993264", resume: "/Resume%20-%20Francis%20Daniel%20Dreu.pdf", githubUsername: "FrDnDr",
   github: "https://github.com/FrDnDr", linkedin: "https://www.linkedin.com/in/fddreu", behance: "[BEHANCE URL]",
@@ -49,7 +51,7 @@ export const portfolio = {
       description: "An internship project that extracted Shopify financial data, transformed it into profitability metrics, and loaded it into DuckDB for reporting in Mvolo Central Command Centre.",
       role: ["Data Analyst Intern", "Dashboard Developer"], technologies: ["Python", "Shopify API", "DuckDB", "JavaScript"],
       platforms: [{ name: "ETL pipeline", type: "data" }, { name: "Profitability dashboard", type: "web" }], links: { github: null, live: "https://project---mvolo.francisdreu.workers.dev/shopify", figma: null, behance: null, mobile: null, admin: null },
-      cover: "", coverVideo: "/projects/etl-pipeline.mp4", gallery: [],
+      cover: mvoloEtlCover, gallery: [],
       caseStudy: {
         overview: "An API-based ETL pipeline built during my Mvolo internship to replace recurring manual financial-data entry and provide a clearer view of Shopify profitability.",
         problem: "Financial reporting relied on repetitive manual entry, making the process slow and leaving limited time for analysis. The dashboard also needed a reliable way to use Shopify data for revenue, profit, and margin reporting.",

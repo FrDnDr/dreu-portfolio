@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Lenis from "lenis";
 import { ArrowDownRight, ArrowUpRight, Menu, X } from "lucide-react";
@@ -6,6 +6,7 @@ import { portfolio, type Project } from "./data/portfolio";
 import { GithubSection } from "./components/GithubSection";
 import { Turnstile } from "./components/Turnstile";
 import { PortfolioCursor } from "./components/PortfolioCursor";
+import mvoloEtlCover from "./assets/mvolo-etl-cover.png";
 
 const scrollTo = (id: string) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
 
@@ -13,7 +14,27 @@ function Reveal({ children }: { children: React.ReactNode }) { const reduce = us
 
 function LiveProjectLink({ project }: { project: Project }) { if (!project.links.live) return null; return <a className="text-link live-project-link" href={project.links.live} target="_blank" rel="noreferrer" aria-label={`Open ${project.title} live project in a new tab`}>LIVE PROJECT ↗</a>; }
 
-function ProjectArt({ project, large = false }: { project: Project; large?: boolean }) { const videoRef = useRef<HTMLVideoElement>(null); const playPreview = () => { void videoRef.current?.play().catch(() => {}); }; const resetPreview = () => { const video = videoRef.current; if (video) { video.pause(); video.currentTime = 0; } }; const category = project.platforms[0]?.type ?? "web"; const isNoBogey = project.slug === "nobogey-caddie-booking"; const hasCover = Boolean(project.cover || project.coverVideo); return <div className={`project-art project-art--${category} ${!hasCover ? "project-art--placeholder" : ""} ${large ? "project-art--large" : ""}`} style={!hasCover ? { background: "linear-gradient(135deg, #1d231a, #54733d)" } : undefined} aria-label={`${project.title} project cover`} role="img" onMouseEnter={playPreview} onMouseLeave={resetPreview} onFocus={playPreview} onBlur={resetPreview}>{project.coverVideo && <video ref={videoRef} src={`${project.coverVideo}#t=0.001`} muted loop playsInline preload="metadata" aria-hidden="true" />}{project.cover && <img src={project.cover} alt="" onError={(event) => { event.currentTarget.style.display = "none"; }} />}<div className="project-art__grid" /><span className="project-art__index">PROJECT_INDEX: {project.index}</span><span className="project-art__category">{project.categories.join(" / ")} / {project.year}</span>{!hasCover && <span className="project-art__placeholder-label">ETL PIPELINE<br />COVER IN PROGRESS</span>}<div className="project-art__shape" /><strong style={isNoBogey ? { background: "#0b0c09", border: "1px solid #c7f430", borderRadius: 10, boxShadow: "0 8px 22px rgba(0, 0, 0, .45)", color: "#c7f430", fontStyle: "italic", lineHeight: ".92", maxWidth: "calc(100% - 32px)", padding: "9px 13px" } : undefined}>{project.title}</strong></div>; }
+function ProjectArt({ project, large = false }: { project: Project; large?: boolean }) {
+  const category = project.platforms[0]?.type ?? "web";
+  const hasHighlightedTitle = project.slug === "nobogey-caddie-booking" || project.slug === "mvolo-shopify-etl";
+  const cover = project.slug === "mvolo-shopify-etl" ? mvoloEtlCover : project.cover;
+  const hasCover = Boolean(cover);
+  return <div
+    key={project.slug}
+    className={`project-art project-art--${category} ${!hasCover ? "project-art--placeholder" : ""} ${large ? "project-art--large" : ""} ${project.slug === "mvolo-shopify-etl" ? "project-art--mvolo" : ""}`}
+    style={!hasCover ? { background: "linear-gradient(135deg, #1d231a, #54733d)" } : undefined}
+    aria-label={`${project.title} project cover`}
+    role="img"
+  >
+    {cover && <img key={`${project.slug}:${cover}`} src={cover} alt="" onError={(event) => { event.currentTarget.style.display = "none"; }} />}
+    <div className="project-art__grid" />
+    <span className="project-art__index">PROJECT_INDEX: {project.index}</span>
+    <span className="project-art__category">{project.categories.join(" / ")} / {project.year}</span>
+    {!hasCover && <span className="project-art__placeholder-label">ETL PIPELINE<br />COVER IN PROGRESS</span>}
+    <div className="project-art__shape" />
+    <strong style={hasHighlightedTitle ? { background: "#0b0c09", border: "1px solid #c7f430", borderRadius: 10, boxShadow: "0 8px 22px rgba(0, 0, 0, .45)", color: "#c7f430", fontStyle: "italic", lineHeight: ".92", maxWidth: "calc(100% - 32px)", padding: "9px 13px", ...(project.slug === "mvolo-shopify-etl" ? { left: "50%", bottom: "20px", transform: "translateX(-50%)", width: "max-content", textAlign: "center" as const } : {}) } : undefined}>{project.title}</strong>
+  </div>;
+}
 
 function Header({ dark, toggleTheme }: { dark: boolean; toggleTheme: () => void }) { const [open, setOpen] = useState(false); const links = [["WORK", "#work"], ["EXPERIENCE", "#experience"], ["STACK", "#stack"], ["ABOUT", "#about"]] as const; const go = (id: string) => { setOpen(false); scrollTo(id); }; return <header className="site-header"><button className="brand" onClick={() => go("#top")} aria-label="Back to top">{portfolio.shortName}</button><nav className="desktop-nav" aria-label="Primary navigation">{links.map(([label, target]) => <button key={target} onClick={() => go(target)}>{label}</button>)}<a href={portfolio.resume} target="_blank" rel="noreferrer">RÉSUMÉ ↗</a></nav><span className="header-status mono"><i />AVAILABLE</span><button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${dark ? "light" : "dark"} mode`} aria-pressed={dark}><span aria-hidden="true">{dark ? "☼" : "◐"}</span>{dark ? "LIGHT" : "DARK"}</button><button className="menu-button" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={18} /> : <Menu size={18} />}<span>{open ? "CLOSE" : "MENU"}</span></button><AnimatePresence>{open && <motion.nav className="mobile-nav" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} aria-label="Mobile navigation">{links.map(([label, target], i) => <motion.button key={target} onClick={() => go(target)} initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * .04 }}><small>{String(i + 1).padStart(2, "0")}</small>{label}</motion.button>)}<a href={portfolio.resume} target="_blank" rel="noreferrer">RÉSUMÉ ↗</a></motion.nav>}</AnimatePresence></header>; }
 
