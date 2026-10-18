@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Lenis from "lenis";
 import { ArrowDownRight, ArrowUpRight, Menu, X } from "lucide-react";
@@ -36,28 +37,92 @@ function ProjectArt({ project, large = false }: { project: Project; large?: bool
   </div>;
 }
 
-function Header({ dark, toggleTheme }: { dark: boolean; toggleTheme: () => void }) { const [open, setOpen] = useState(false); const links = [["WORK", "#work"], ["EXPERIENCE", "#experience"], ["STACK", "#stack"], ["ABOUT", "#about"]] as const; const go = (id: string) => { setOpen(false); scrollTo(id); }; return <header className="site-header"><button className="brand" onClick={() => go("#top")} aria-label="Back to top">{portfolio.shortName}</button><nav className="desktop-nav" aria-label="Primary navigation">{links.map(([label, target]) => <button key={target} onClick={() => go(target)}>{label}</button>)}<a href={portfolio.resume} target="_blank" rel="noreferrer">RÉSUMÉ ↗</a></nav><span className="header-status mono"><i />AVAILABLE</span><button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${dark ? "light" : "dark"} mode`} aria-pressed={dark}><span aria-hidden="true">{dark ? "☼" : "◐"}</span>{dark ? "LIGHT" : "DARK"}</button><button className="menu-button" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={18} /> : <Menu size={18} />}<span>{open ? "CLOSE" : "MENU"}</span></button><AnimatePresence>{open && <motion.nav className="mobile-nav" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} aria-label="Mobile navigation">{links.map(([label, target], i) => <motion.button key={target} onClick={() => go(target)} initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * .04 }}><small>{String(i + 1).padStart(2, "0")}</small>{label}</motion.button>)}<a href={portfolio.resume} target="_blank" rel="noreferrer">RÉSUMÉ ↗</a></motion.nav>}</AnimatePresence></header>; }
+function Header({ dark, toggleTheme }: { dark: boolean; toggleTheme: () => void }) {
+  const [open, setOpen] = useState(false);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const links = [["WORK", "#work"], ["EXPERIENCE", "#experience"], ["STACK", "#stack"], ["ABOUT", "#about"]] as const;
 
-function Hero({ dark }: { dark: boolean }) { const reduce = useReducedMotion(); const [pixelMode, setPixelMode] = useState(true); const [pixelating, setPixelating] = useState(false); const portrait = pixelMode ? `${import.meta.env.BASE_URL}images/me-pic-pixel.png` : `${import.meta.env.BASE_URL}images/me-pic.jpg`; const portraitFilter = dark ? "grayscale(1) contrast(1.2) brightness(.9)" : "grayscale(0)"; const togglePortrait = () => { if (!pixelMode && !reduce) setPixelating(true); setPixelMode(value => !value); }; return <section id="top" className="hero"><div className="hero__meta mono"><span>01 / BUILDER</span><span><i className="availability-dot" />OPEN TO OPPORTUNITIES</span></div><div className="hero__title">{portfolio.headline.map((line, i) => <motion.h1 key={line} initial={reduce ? false : { y: 65, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: .7, delay: i * .08 }}>{line}</motion.h1>)}<button type="button" className={`hero__portrait ${pixelMode ? "hero__portrait--pixel" : ""}`} onClick={togglePortrait} aria-pressed={pixelMode} aria-label={pixelMode ? "Show Francis Dreu photo portrait" : "Show Francis Dreu pixel portrait"}><AnimatePresence initial={false} mode="wait"><motion.img key={portrait} src={portrait} alt="" initial={reduce ? false : { opacity: 0, scale: 1.1, filter: portraitFilter }} animate={{ opacity: 1, scale: 1, filter: portraitFilter }} exit={reduce ? undefined : { opacity: 0, scale: .92, filter: portraitFilter }} transition={{ duration: reduce ? 0 : .36, ease: "easeOut" }} /></AnimatePresence>{pixelating && <i className="hero__pixel-transition" aria-hidden="true" onAnimationEnd={() => setPixelating(false)} />}</button></div><div className="hero__bottom"><div><p>{portfolio.intro}</p><div className="hero__actions"><button className="text-link" onClick={() => scrollTo("#work")}>VIEW MY WORK <ArrowDownRight /></button><a className="text-link" href={portfolio.resume} target="_blank" rel="noreferrer">DOWNLOAD RÉSUMÉ <ArrowDownRight /></a></div></div></div><span className="hero__active mono">BUILD → MEASURE → REFINE → REPEAT</span></section>; }
+  useEffect(() => {
+    const menu = dialog.current;
+    if (!menu) return;
+    if (!open) { menu.close(); return; }
+    menu.showModal();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const desktop = window.matchMedia("(min-width: 900px)");
+    const dismissOnDesktop = () => { if (desktop.matches) setOpen(false); };
+    desktop.addEventListener("change", dismissOnDesktop);
+    return () => {
+      menu.close();
+      document.body.style.overflow = previousOverflow;
+      desktop.removeEventListener("change", dismissOnDesktop);
+    };
+  }, [open]);
+
+  const go = (id: string) => {
+    dialog.current?.close();
+    setOpen(false);
+    requestAnimationFrame(() => scrollTo(id));
+  };
+  const keepFocusInMenu = (event: React.KeyboardEvent<HTMLDialogElement>) => {
+    if (event.key !== "Tab") return;
+    const controls = event.currentTarget.querySelectorAll<HTMLElement>("button, a[href]");
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last?.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first?.focus();
+    }
+  };
+
+  return <>
+    <header className="site-header">
+      <button className="brand" onClick={() => go("#top")} aria-label="Back to top">{portfolio.shortName}</button>
+      <nav className="desktop-nav" aria-label="Primary navigation">{links.map(([label, target]) => <button key={target} onClick={() => go(target)}>{label}</button>)}<a href={portfolio.resume} target="_blank" rel="noreferrer">RÉSUMÉ ↗</a></nav>
+      <span className="header-status mono"><i />AVAILABLE</span>
+      <button className="theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${dark ? "light" : "dark"} mode`} aria-pressed={dark}><span aria-hidden="true">{dark ? "☼" : "◐"}</span>{dark ? "LIGHT" : "DARK"}</button>
+      <button className="menu-button" aria-haspopup="dialog" aria-controls="mobile-menu" aria-expanded={open} onClick={() => setOpen(true)}><Menu size={18} /><span>MENU</span></button>
+    </header>
+    {createPortal(<dialog ref={dialog} id="mobile-menu" className="mobile-menu-dialog" aria-label="Navigation" onCancel={() => setOpen(false)} onClose={() => setOpen(false)} onKeyDown={keepFocusInMenu} data-lenis-prevent>
+      <button type="button" className="mobile-menu-close" onClick={() => setOpen(false)}><X size={20} /> CLOSE</button>
+      <nav className="mobile-nav" aria-label="Mobile navigation">
+        {links.map(([label, target], i) => <button key={target} onClick={() => go(target)}><small>{String(i + 1).padStart(2, "0")}</small>{label}</button>)}
+        <a href={portfolio.resume} target="_blank" rel="noreferrer">RÉSUMÉ ↗</a>
+      </nav>
+    </dialog>, document.body)}
+  </>;
+}
+
+function Hero({ dark }: { dark: boolean }) { const reduce = useReducedMotion(); const [pixelMode, setPixelMode] = useState(true); const [pixelating, setPixelating] = useState(false); const portrait = pixelMode ? `${import.meta.env.BASE_URL}images/me-pic-pixel.png` : `${import.meta.env.BASE_URL}images/me-pic.jpg`; const portraitFilter = dark ? "grayscale(1) contrast(1.2) brightness(.9)" : "grayscale(0)"; const togglePortrait = () => { if (!pixelMode && !reduce) setPixelating(true); setPixelMode(value => !value); }; return <section id="top" className="hero"><div className="hero__meta mono"><span>01 / BUILDER</span><span><i className="availability-dot" />OPEN TO OPPORTUNITIES</span></div><div className="hero__title"><h1 className="hero__headline">{portfolio.headline.map((line, i) => <motion.span key={line} initial={reduce ? false : { y: 28, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: .7, delay: i * .08 }}>{line}{i < portfolio.headline.length - 1 && " "}</motion.span>)}</h1><button type="button" className={`hero__portrait ${pixelMode ? "hero__portrait--pixel" : ""}`} onClick={togglePortrait} aria-pressed={pixelMode} aria-label={pixelMode ? "Show Francis Dreu photo portrait" : "Show Francis Dreu pixel portrait"}><AnimatePresence initial={false} mode="wait"><motion.img key={portrait} src={portrait} alt="" initial={reduce ? false : { opacity: 0, scale: 1.1, filter: portraitFilter }} animate={{ opacity: 1, scale: 1, filter: portraitFilter }} exit={reduce ? undefined : { opacity: 0, scale: .92, filter: portraitFilter }} transition={{ duration: reduce ? 0 : .36, ease: "easeOut" }} /></AnimatePresence>{pixelating && <i className="hero__pixel-transition" aria-hidden="true" onAnimationEnd={() => setPixelating(false)} />}</button></div><div className="hero__bottom"><div><p>{portfolio.intro}</p><div className="hero__actions"><button className="text-link" onClick={() => scrollTo("#work")}>VIEW MY WORK <ArrowDownRight /></button><a className="text-link" href={portfolio.resume} target="_blank" rel="noreferrer">DOWNLOAD RÉSUMÉ <ArrowDownRight /></a></div></div></div><span className="hero__active mono">BUILD → MEASURE → REFINE → REPEAT</span></section>; }
 
 function About() { return <section id="about" className="about section-shell"><div className="section-label mono">06 / ABOUT <span>WHY I BUILD</span></div><div className="about__grid"><h2>I WORK BETWEEN<br />DATA, DESIGN<br />AND <em>DEVELOPMENT.</em></h2><div><p className="body-large">{portfolio.bio}</p><p className="body-copy">{portfolio.aboutDetail}</p><div className="fact-grid">{portfolio.stats.map(stat => <div key={stat.label}><strong>{stat.value}</strong><span>{stat.label}</span></div>)}</div></div></div></section>; }
 
 function Expertise() { const [active, setActive] = useState(0); const reduce = useReducedMotion(); const total = portfolio.roles.length; const move = (direction: 1 | -1) => setActive(current => (current + direction + total) % total); useEffect(() => { if (reduce) return; const timer = window.setInterval(() => move(1), 10_000); return () => window.clearInterval(timer); }, [reduce]); return <section id="expertise" className="expertise"><div className="section-shell"><div className="section-label mono">FOUR MODES OF THINKING <span>{String(active + 1).padStart(2, "0")} — {String(total).padStart(2, "0")}</span></div></div><div className="expertise__carousel" role="region" aria-roledescription="carousel" aria-label="Areas of expertise"><div className="expertise__rail" style={{ transform: `translateX(-${active * 25}%)` }}>{portfolio.roles.map((role, i) => <article key={role.title} className={`expertise-card expertise-card--${role.slug}`} aria-hidden={i !== active}><div className="mono"><span>MODE {String(i + 1).padStart(2, "0")}</span><span>{role.title}</span></div><div className="expertise-card__motif" aria-hidden="true"><i /><i /><i /></div><h2>{role.headline.map(line => <span key={line}>{line}</span>)}</h2><p>{role.description}</p><div className="skill-cloud">{role.skills.slice(0, 6).map(skill => <span key={skill}>{skill}</span>)}</div><button className="text-link" onClick={() => scrollTo("#work")}>EXPLORE {role.short} <ArrowDownRight /></button></article>)}</div><div className="expertise__controls"><button type="button" onClick={() => move(-1)} aria-label="Previous expertise area">← PREVIOUS</button><div>{portfolio.roles.map((role, i) => <button type="button" key={role.slug} className={i === active ? "active" : ""} onClick={() => setActive(i)} aria-label={`Show ${role.title}`} aria-pressed={i === active} />)}</div><button type="button" onClick={() => move(1)} aria-label="Next expertise area">NEXT →</button></div></div></section>; }
 
 function Work({ open }: { open: (project: Project) => void }) {
-  const [active, setActive] = useState(0);
-  const reduce = useReducedMotion();
-  const total = portfolio.projects.length;
-  const project = portfolio.projects[active];
-  const move = (direction: 1 | -1) => setActive(current => (current + direction + total) % total);
-
-  useEffect(() => {
-    if (reduce || total < 2) return;
-    const timer = window.setInterval(() => move(1), 9_000);
-    return () => window.clearInterval(timer);
-  }, [reduce, total]);
-
-  return <section id="work" className="work section-shell"><div className="section-label mono">02 / SELECTED WORK <span>{String(active + 1).padStart(2, "0")} — {String(total).padStart(2, "0")}</span></div><div className="work__head"><h2>WORK WITH<br /><em>CONTEXT.</em></h2><p className="body-copy">Selected work across data systems, mobile products, and web experiences — with the decisions and implementation context behind each one.</p></div><div className="work-carousel" role="region" aria-roledescription="carousel" aria-label="Selected projects"><AnimatePresence mode="wait" initial={false}><motion.article key={project.slug} className="work-project work-project--carousel" initial={reduce ? false : { opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={reduce ? undefined : { opacity: 0, x: -40 }} transition={{ duration: .42, ease: "easeOut" }}><button className="work-project__visual" type="button" onClick={() => open(project)}><ProjectArt project={project} /><span>OPEN CASE STUDY →</span></button><div className="work-project__content"><div className="mono"><span>{project.type}</span><span>{project.year}</span></div><h3>{project.title}</h3><p>{project.tagline}</p><div className="project-tags">{project.technologies.map(technology => <span key={technology}>{technology}</span>)}</div><div className="work-project__actions"><button className="text-link" type="button" onClick={() => open(project)}>VIEW CASE STUDY <ArrowDownRight /></button><LiveProjectLink project={project} /></div></div></motion.article></AnimatePresence><div className="work-carousel__controls"><button type="button" onClick={() => move(-1)} aria-label="Previous project">← PREVIOUS</button><div>{portfolio.projects.map((item, index) => <button type="button" key={item.slug} className={index === active ? "active" : ""} onClick={() => setActive(index)} aria-label={`Show ${item.title}`} aria-pressed={index === active} />)}</div><button type="button" onClick={() => move(1)} aria-label="Next project">NEXT →</button></div></div></section>;
+  return <section id="work" className="work section-shell">
+    <div className="section-label mono">02 / SELECTED WORK <span>{String(portfolio.projects.length).padStart(2, "0")} PROJECTS</span></div>
+    <div className="work__head"><h2>WORK WITH<br /><em>CONTEXT.</em></h2><p className="body-copy">Selected work across data systems, mobile products, and web experiences — with the decisions and implementation context behind each one.</p></div>
+    <div className="project-list">{portfolio.projects.map((project, index) => {
+      const visit = (event: React.MouseEvent<HTMLAnchorElement>) => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        open(project);
+      };
+      return <article key={project.slug} className={`work-project work-project--${index}`} aria-labelledby={`project-title-${project.slug}`}>
+        <a className="work-project__visual" href={`/work/${project.slug}`} onClick={visit} aria-label={`View ${project.title} case study`}><ProjectArt project={project} /><span>OPEN CASE STUDY →</span></a>
+        <div className="work-project__content">
+          <div className="mono"><span>{project.type}</span><span>{project.year}</span></div>
+          <h3 id={`project-title-${project.slug}`}>{project.title}</h3><p>{project.tagline}</p>
+          <div className="project-tags">{project.technologies.map(technology => <span key={technology}>{technology}</span>)}</div>
+          <div className="work-project__actions"><a id={`case-study-link-${project.slug}`} className="text-link" href={`/work/${project.slug}`} onClick={visit}>VIEW CASE STUDY <ArrowDownRight /></a><LiveProjectLink project={project} /></div>
+        </div>
+      </article>;
+    })}</div>
+  </section>;
 }
 
 function Skills() {
@@ -125,6 +190,74 @@ function Contact() {
   return <section id="contact" className="contact"><div className="section-label mono">CONTACT / 08 <span>LET'S MAKE IT USEFUL</span></div><h2>LET'S BUILD<br />SOMETHING<br /><em>USEFUL.</em></h2><div className="contact__grid"><div className="contact-links"><a href={`mailto:${portfolio.email}`}>EMAIL <span>{portfolio.email}</span><ArrowUpRight /></a><a href={`tel:${portfolio.phone}`}>PHONE <span>{portfolio.phone}</span><ArrowUpRight /></a><a href={portfolio.github} target="_blank" rel="noreferrer">GITHUB <span>OPEN PROFILE</span><ArrowUpRight /></a><a href={portfolio.linkedin} target="_blank" rel="noreferrer">LINKEDIN <span>CONNECT</span><ArrowUpRight /></a></div><form noValidate onSubmit={submit}><label>FULL NAME<input required name="name" aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "contact-name-error" : undefined} placeholder="[YOUR FULL NAME]" /></label>{errors.name && <p id="contact-name-error" className="contact-form-error">{errors.name}</p>}<label>EMAIL<input required name="email" type="email" aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "contact-email-error" : undefined} placeholder="[YOUR EMAIL]" /></label>{errors.email && <p id="contact-email-error" className="contact-form-error">{errors.email}</p>}<label>MESSAGE<textarea required name="message" rows={3} aria-invalid={Boolean(errors.message)} aria-describedby={errors.message ? "contact-message-error" : "contact-message-hint"} placeholder="[TELL ME ABOUT YOUR PROJECT]" /></label>{errors.message ? <p id="contact-message-error" className="contact-form-error">{errors.message}</p> : <p id="contact-message-hint" className="contact-form-hint">10–150 words</p>}{!submitted && <Turnstile key={verificationAttempt} onToken={setTurnstileToken} />}<button type="submit" disabled={submitted || status === "sending" || !turnstileToken}>{submitted ? "MESSAGE SENT — ONE PER SESSION" : status === "sending" ? "SENDING…" : "SEND MESSAGE →"}</button><small>{submitted ? "Thanks — your message has been sent." : status === "error" ? "Message could not be sent. Please try again." : "Your message will be sent directly to Francis."}</small></form></div></section>;
 }
 
-function CaseStudy({ project, close }: { project: Project; close: () => void }) { return <motion.main className="case-study" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><header><button className="brand" onClick={close}>← {portfolio.shortName}</button><button className="text-link" onClick={close}>BACK TO WORK</button></header><section className="case-study__hero"><div className="section-label mono">{project.categories.join(" / ")} / {project.year} <span>CASE STUDY / {project.index}</span></div><h1>{project.title}</h1><p>{project.description}</p><ProjectArt project={project} large /></section><section className="case-study__details">{[["01 — OVERVIEW", project.caseStudy.overview], ["02 — PROBLEM", project.caseStudy.problem], ["03 — APPROACH", project.caseStudy.approach], ["04 — SOLUTION", project.caseStudy.solution], ["05 — OUTCOME", project.caseStudy.outcome]].map(([label, body]) => <article key={label}><span className="mono">{label}</span><p>{body}</p></article>)}<article><span className="mono">06 — TECHNOLOGIES</span><p>{project.technologies.join(" / ")}</p></article></section><footer><button onClick={close}>← ALL WORK</button>{project.links.github && <a href={project.links.github} target="_blank" rel="noreferrer">GITHUB ↗</a>}<LiveProjectLink project={project} /></footer></motion.main>; }
+function CaseStudy({ project, close }: { project: Project; close: () => void }) { return <motion.main className="case-study" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><header><button className="brand" onClick={close}>← {portfolio.shortName}</button><button className="text-link" onClick={close}>BACK TO WORK</button></header><section className="case-study__hero"><div className="section-label mono">{project.categories.join(" / ")} / {project.year} <span>CASE STUDY / {project.index}</span></div><h1 id="case-study-heading" tabIndex={-1}>{project.title}</h1><p>{project.description}</p><ProjectArt project={project} large /></section><section className="case-study__details">{[["01 — OVERVIEW", project.caseStudy.overview], ["02 — PROBLEM", project.caseStudy.problem], ["03 — APPROACH", project.caseStudy.approach], ["04 — SOLUTION", project.caseStudy.solution], ["05 — OUTCOME", project.caseStudy.outcome]].map(([label, body]) => <article key={label}><span className="mono">{label}</span><p>{body}</p></article>)}<article><span className="mono">06 — TECHNOLOGIES</span><p>{project.technologies.join(" / ")}</p></article></section><footer><button onClick={close}>← ALL WORK</button>{project.links.github && <a href={project.links.github} target="_blank" rel="noreferrer">GITHUB ↗</a>}<LiveProjectLink project={project} /></footer></motion.main>; }
 
-export default function App() { const [activeProject, setActiveProject] = useState<Project | null>(null); const [dark, setDark] = useState(() => localStorage.getItem("portfolio-theme") === "dark" || (!localStorage.getItem("portfolio-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches)); useEffect(() => { const lenis = new Lenis({ autoRaf: true, duration: 1.1, smoothWheel: true, syncTouch: false }); return () => lenis.destroy(); }, []); useEffect(() => { document.documentElement.classList.toggle("theme-dark", dark); localStorage.setItem("portfolio-theme", dark ? "dark" : "light"); }, [dark]); useEffect(() => { const slug = window.location.pathname.split("/").pop(); if (window.location.pathname.startsWith("/work/")) setActiveProject(portfolio.projects.find(project => project.slug === slug) ?? null); }, []); const open = (project: Project) => { window.history.pushState({}, "", `/work/${project.slug}`); setActiveProject(project); window.scrollTo(0, 0); }; const close = () => { window.history.pushState({}, "", "/"); setActiveProject(null); }; return <><PortfolioCursor dark={dark} /><AnimatePresence mode="wait">{activeProject ? <CaseStudy key="case-study" project={activeProject} close={close} /> : <motion.main key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><Header dark={dark} toggleTheme={() => setDark(value => !value)} /><Hero dark={dark} /><Reveal><Work open={open} /></Reveal><Reveal><Experience /></Reveal><Reveal><Skills /></Reveal><Reveal><About /></Reveal><Reveal><GithubSection username={portfolio.githubUsername} /></Reveal><Reveal><Contact /></Reveal><footer className="site-footer"><strong>Built, measured, refined, and shipped by Francis Dreu.</strong><span><a href={portfolio.github} target="_blank" rel="noreferrer">GITHUB ↗</a><a href={portfolio.linkedin} target="_blank" rel="noreferrer">LINKEDIN ↗</a><a href={`mailto:${portfolio.email}`}>EMAIL ↗</a></span><button onClick={() => scrollTo("#top")}>BACK TO TOP ↑</button><span>{portfolio.version} · © {new Date().getFullYear()}</span></footer></motion.main>}</AnimatePresence></>; }
+function projectFromPath() {
+  return portfolio.projects.find(project => window.location.pathname === `/work/${project.slug}`) ?? null;
+}
+
+type NavigationTarget = { scrollY?: number; focusId?: string; section?: string };
+
+export default function App() {
+  const [activeProject, setActiveProject] = useState<Project | null>(projectFromPath);
+  const [dark, setDark] = useState(() => localStorage.getItem("portfolio-theme") === "dark" || (!localStorage.getItem("portfolio-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches));
+  const navigation = useRef<NavigationTarget | null>(null);
+
+  useEffect(() => {
+    const lenis = new Lenis({ autoRaf: true, duration: 1.1, smoothWheel: true, syncTouch: false });
+    return () => lenis.destroy();
+  }, []);
+  useEffect(() => {
+    document.documentElement.classList.toggle("theme-dark", dark);
+    localStorage.setItem("portfolio-theme", dark ? "dark" : "light");
+  }, [dark]);
+  useEffect(() => {
+    const previousRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+    const syncRoute = (event: PopStateEvent) => {
+      const project = projectFromPath();
+      navigation.current = project
+        ? { scrollY: 0, focusId: "case-study-heading" }
+        : { scrollY: event.state?.portfolioScrollY ?? 0, focusId: event.state?.projectSlug ? `case-study-link-${event.state.projectSlug}` : undefined };
+      setActiveProject(project);
+    };
+    window.addEventListener("popstate", syncRoute);
+    return () => {
+      window.removeEventListener("popstate", syncRoute);
+      window.history.scrollRestoration = previousRestoration;
+    };
+  }, []);
+  useLayoutEffect(() => {
+    const target = navigation.current;
+    if (!target) return;
+    navigation.current = null;
+    const frame = requestAnimationFrame(() => {
+      if (target.section) document.getElementById(target.section)?.scrollIntoView({ behavior: "instant" });
+      else window.scrollTo({ top: target.scrollY ?? 0, behavior: "instant" });
+      document.getElementById(target.focusId ?? "")?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [activeProject]);
+
+  const open = (project: Project) => {
+    window.history.replaceState({ ...window.history.state, portfolioScrollY: window.scrollY, projectSlug: project.slug }, "");
+    window.history.pushState({ portfolioCaseStudy: true }, "", `/work/${project.slug}`);
+    navigation.current = { scrollY: 0, focusId: "case-study-heading" };
+    setActiveProject(project);
+  };
+  const close = () => {
+    if (window.history.state?.portfolioCaseStudy) { window.history.back(); return; }
+    const slug = activeProject?.slug;
+    window.history.pushState({ projectSlug: slug }, "", "/");
+    navigation.current = { section: "work", focusId: `case-study-link-${slug}` };
+    setActiveProject(null);
+  };
+
+  return <><PortfolioCursor dark={dark} />{activeProject
+    ? <CaseStudy key={activeProject.slug} project={activeProject} close={close} />
+    : <motion.main key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <Header dark={dark} toggleTheme={() => setDark(value => !value)} /><Hero dark={dark} />
+      <Reveal><Work open={open} /></Reveal><Reveal><Experience /></Reveal><Reveal><Skills /></Reveal><Reveal><About /></Reveal><Reveal><GithubSection username={portfolio.githubUsername} /></Reveal><Reveal><Contact /></Reveal>
+      <footer className="site-footer"><strong>Built, measured, refined, and shipped by Francis Dreu.</strong><span><a href={portfolio.github} target="_blank" rel="noreferrer">GITHUB ↗</a><a href={portfolio.linkedin} target="_blank" rel="noreferrer">LINKEDIN ↗</a><a href={`mailto:${portfolio.email}`}>EMAIL ↗</a></span><button onClick={() => scrollTo("#top")}>BACK TO TOP ↑</button><span>{portfolio.version} · © {new Date().getFullYear()}</span></footer>
+    </motion.main>}</>;
+}

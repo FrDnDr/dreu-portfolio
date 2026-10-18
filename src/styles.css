@@ -168,3 +168,58 @@ body{letter-spacing:.012em}
 .project-art--mvolo>img,.work-project__visual:hover .project-art--mvolo>img{object-fit:contain;background:#10100f;filter:none;transform:none}
 
 .project-art--mvolo .project-art__grid,.project-art--mvolo .project-art__shape{display:none}
+
+/* v4: readable navigation, stable project browsing, and keyboard access. */
+:root{--muted:#626159;--focus:#405218}
+.theme-dark{--focus:#c7f430;--muted:#aaa9a2}
+.site-header{mix-blend-mode:normal;color:var(--ink);background:var(--paper);border-bottom:1px solid var(--line)}
+.site-header .brand,.desktop-nav button,.desktop-nav a,.theme-toggle,.menu-button{min-height:44px;display:inline-flex;align-items:center}
+.menu-button{display:none}
+section[id]{scroll-margin-top:86px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:5px}
+.contact form input:focus-visible,.contact form textarea:focus-visible{outline:3px solid #10100f;outline-offset:5px}
+.contribution-grid:focus-visible{outline-color:var(--lime);outline-offset:5px}
+.work-project__content>.mono{color:#5c5b55}
+.fact-grid span{color:var(--muted)}
+.contribution-grid__weekday,.contribution-month,.contribution-grid__legend{color:#aaa9a0}
+.contact .section-label span,.contact-form-hint{color:#10100f}
+.hero__active{right:16px}
+.project-art__index,.project-art__category{background:#10100f;padding:5px 7px;color:#f1f0eb;max-width:calc(50% - 24px)}
+.work-project__visual:focus-visible>span{opacity:1;background:#10100f;padding:6px}
+.work-project__actions .text-link{min-height:44px;align-items:center}
+.project-list>.work-project:last-child{margin-bottom:0}
+.work-project__visual{text-decoration:none;color:inherit}
+
+.hero__title{display:grid;grid-template-columns:minmax(0,1fr) clamp(160px,23vw,350px);align-items:center;gap:32px;margin:clamp(28px,5vw,64px) 0}
+.hero .hero__headline{margin:0;max-width:none;font-size:clamp(36px,6vw,104px);line-height:1.05;letter-spacing:-.055em}
+.hero__headline>span{display:block;white-space:nowrap}
+.hero .hero__portrait{position:relative;top:auto;right:auto;z-index:0;width:100%;height:auto;aspect-ratio:3/4;mask-image:none;-webkit-mask-image:none;margin:0}
+.about__grid{grid-template-columns:minmax(0,1.2fr) minmax(0,.9fr);gap:5vw}
+.about h2{font-size:clamp(32px,5vw,76px);overflow-wrap:normal;letter-spacing:-.025em}
+.about h2 em{white-space:nowrap;font-size:.9em}
+.case-study__hero h1{font-size:clamp(40px,8vw,104px);letter-spacing:-.05em;overflow-wrap:normal}
+
+.mobile-menu-dialog{position:fixed;inset:0;margin:0;width:100%;max-width:none;height:100dvh;max-height:none;padding:88px 24px 32px;border:0;background:var(--paper);color:var(--ink);overscroll-behavior:contain;overflow-y:auto}
+.mobile-menu-dialog::backdrop{background:var(--paper)}
+.mobile-menu-dialog .mobile-nav{position:static;inset:auto;display:flex;flex-direction:column;justify-content:center;min-height:calc(100% - 44px);padding:0;background:transparent;color:inherit}
+.mobile-menu-dialog .mobile-nav button{color:inherit;border-color:var(--line);font-size:clamp(32px,10vw,64px);padding:18px 0}
+.mobile-menu-dialog .mobile-nav a{display:inline-flex;align-items:center;min-height:48px;align-self:flex-start;margin-top:24px;color:inherit;font:500 13px "DM Mono",monospace}
+.mobile-menu-close{position:absolute;top:16px;right:20px;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 12px;background:transparent;border:1px solid var(--line);color:inherit;font:500 12px "DM Mono",monospace}
+
+@media(max-width:899px){
+  .site-header{gap:10px}
+  .menu-button{display:inline-flex}
+  .hero__title{grid-template-columns:minmax(0,1fr) 22vw;gap:20px}
+  .hero .hero__headline{font-size:6.2vw}
+  .about__grid{grid-template-columns:1fr;gap:40px}
+  .about h2{font-size:clamp(32px,6.5vw,58px)}
+}
+@media(max-width:620px){
+  .hero__title{display:flex;flex-direction:column;align-items:stretch;gap:0;margin:36px 0 28px}
+  .hero .hero__headline{font-size:clamp(32px,12.5vw,76px);line-height:1.05;letter-spacing:-.065em}
+  .hero .hero__portrait{width:clamp(132px,38vw,200px);margin-top:24px;align-self:flex-end}
+  .about h2{font-size:clamp(28px,8.4vw,46px);line-height:1.12}
+  .about h2 em{font-size:1em}
+  .case-study__hero h1{font-size:clamp(36px,11vw,64px);line-height:1.08}
+  .site-header .theme-toggle{margin-right:0}
+}

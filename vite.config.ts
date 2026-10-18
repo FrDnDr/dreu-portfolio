@@ -79,5 +79,14 @@ export default defineConfig(({ mode }) => {
       })
     },
   }],
+  server: {
+    // These images are served by R2 in production; forward them for local UI work.
+    proxy: {
+      '^/(?:images/me-pic(?:-pixel)?\\.(?:jpg|png)|projects/nobogey-platform-ecosystem-cover\\.png)$': {
+        target: 'https://frdndr.com',
+        changeOrigin: true,
+      },
+    },
+  },
 }
 })
