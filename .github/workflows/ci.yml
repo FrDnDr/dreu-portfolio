@@ -22,12 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          # The locked Wrangler 4.135.0 release requires Node.js 22 or newer.
+          # Wrangler requires Node.js 22 or newer.
           node-version: 22
           cache: npm
 
@@ -37,14 +37,20 @@ jobs:
       - name: Build portfolio
         run: npm run build
 
+      - name: Test Worker security controls
+        run: npm run test:security
+
+      - name: Check dependency advisories
+        run: npm audit --audit-level=high
+
       - name: Deploy to Cloudflare Workers
         # Pull requests only validate the build. Production deploys come from main.
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        uses: cloudflare/wrangler-action@v4
+        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: 4.135.0
+          # Reuse the audited Wrangler installed by npm ci from package-lock.json.
           command: deploy
           # wrangler.jsonc declares this Worker binding as required.
           secrets: |

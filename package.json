@@ -1,11 +1,12 @@
 {
   "name": "multidisciplinary-portfolio",
   "private": true,
-  "version": "4.0.0",
+  "version": "4.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "test:security": "node --test tests/worker-security.test.mjs",
     "preview": "vite preview",
     "cf:dev": "wrangler dev",
     "deploy": "npm run build && wrangler deploy"
@@ -24,6 +25,6 @@
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "typescript": "^5.9.2",
-    "wrangler": "^4.128.0"
+    "wrangler": "^4.151.1"
   }
 }

@@ -14,6 +14,13 @@
   "secrets": {
     "required": ["GITHUB_TOKEN"]
   },
+  "ratelimits": [
+    {
+      "name": "CONTRIBUTIONS_UPSTREAM_LIMITER",
+      "namespace_id": "2026101901",
+      "simple": { "limit": 6, "period": 60 }
+    }
+  ],
   "r2_buckets": [
     {
       "binding": "PORTFOLIO_ASSETS",
