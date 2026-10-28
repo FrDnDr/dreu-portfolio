@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 type TurnstileApi = {
   render(container: HTMLElement, options: {
     sitekey: string;
-    size: "flexible";
+    size: "flexible" | "compact";
     theme: "light";
     callback(token: string): void;
     "expired-callback"(): void;
@@ -48,8 +48,33 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
   const container = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<"loading" | "verified" | "error">("loading");
   const [attempt, setAttempt] = useState(0);
+  const [nearViewport, setNearViewport] = useState(false);
+  const [compact, setCompact] = useState(false);
 
   useEffect(() => {
+    if (!container.current) return;
+    const observer = new ResizeObserver(entries => {
+      const width = entries[0]?.contentRect.width;
+      if (width !== undefined) setCompact(width < 300);
+    });
+    observer.observe(container.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!container.current) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        setNearViewport(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: "300px" });
+    observer.observe(container.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!nearViewport) return;
     let cancelled = false;
     let widget: string | undefined;
     let api: TurnstileApi | undefined;
@@ -65,7 +90,7 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
       api = loaded;
       widget = api.render(container.current, {
         sitekey: "0x4AAAAAAFYpvnlRlLT6OQ1K",
-        size: "flexible",
+        size: compact ? "compact" : "flexible",
         theme: "light",
         callback: token => {
           if (cancelled) return;
@@ -81,7 +106,7 @@ export function Turnstile({ onToken }: { onToken: (token: string) => void }) {
       cancelled = true;
       if (widget !== undefined) api?.remove(widget);
     };
-  }, [onToken, attempt]);
+  }, [onToken, attempt, nearViewport, compact]);
 
   return <div className="contact-verification">
     <div ref={container} />

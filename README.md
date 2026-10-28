@@ -1,6 +1,8 @@
 # Dreu Portfolio
 
-An editable Vite + React portfolio mockup for data, UI design, mobile, and web work.
+A Vite + React portfolio for full-stack web and mobile development.
+
+[View portfolio](https://www.frdndr.com/)
 
 ## Edit your content
 

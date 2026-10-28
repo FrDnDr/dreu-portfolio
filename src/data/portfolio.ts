@@ -1,4 +1,5 @@
-import mvoloEtlCover from "../assets/mvolo-etl-cover.png";
+import nobogeyCover from "../assets/nobogey-platform-ecosystem-cover.webp";
+import mvoloEtlCover from "../assets/mvolo-etl-cover.webp";
 
 export type Category = "data" | "ui" | "mobile" | "web";
 
@@ -29,13 +30,13 @@ export type Experience = {
 };
 
 export const portfolio = {
-  version: "v4.2",
+  version: "v4.3",
   name: "Francis Daniel Dreu", shortName: "FRANCIS DREU", location: "THE PHILIPPINES", availability: "REMOTE OPPORTUNITIES",
   email: "dreufrancisdaniel@gmail.com", phone: "09086993264", resume: "/Dreu-Francis-Daniel.pdf", githubUsername: "FrDnDr",
-  github: "https://github.com/FrDnDr", linkedin: "https://www.linkedin.com/in/fddreu", behance: "[BEHANCE URL]",
-  headline: ["I LEARN BY", "BUILDING AND", "CONTRIBUTING."],
-  intro: "I’m Francis — a software developer who enjoys contributing to data-informed products, useful automation, and thoughtful digital experiences while learning from the people and problems behind them.",
-  bio: "I like working where software, data, and design overlap.",
+  github: "https://github.com/FrDnDr", linkedin: "https://www.linkedin.com/in/fddreu", behance: "https://www.behance.net/francisdanieldreu",
+  headline: ["FULL-STACK", "DEVELOPER.", "WEB & MOBILE."],
+  intro: "I’m Francis, a full-stack developer building web and mobile products with React, Next.js, and React Native.",
+  bio: "I learn by building and contributing.",
   aboutDetail: "I enjoy taking messy problems, understanding how they work, and turning them into useful systems or products. My work ranges from web applications and dashboards to automation and data workflows — with iteration built into the process.",
   stats: [{ value: "[01]", label: "YEARS EXPERIENCE" }, { value: "[26]", label: "TECHNOLOGIES" }],
   roles: [
@@ -46,7 +47,23 @@ export const portfolio = {
   ],
   projects: [
     {
-      index: "01", title: "Mvolo — Shopify Financial ETL Pipeline", slug: "mvolo-shopify-etl", year: "2026", type: "DATA ENGINEERING / ANALYTICS", categories: ["DATA", "WEB"],
+      index: "01", title: "NoBogey: Multi-Platform Golf Caddie Booking System", slug: "nobogey-caddie-booking", year: "2026", type: "MULTI-PLATFORM PRODUCT", categories: ["MOBILE", "WEB", "UI"],
+      tagline: "A connected booking and operations experience for golfers, caddies, and course teams.",
+      description: "A multi-platform golf caddie booking system with a public landing page, golfer and caddie mobile experiences, and an admin dashboard for course operations.",
+      role: ["Frontend / Mobile Developer", "UI Implementation"], technologies: ["React Native", "Expo", "Expo Router", "TypeScript", "React", "Vite"],
+      platforms: [{ name: "Golfer mobile app", type: "mobile" }, { name: "Caddie mobile app", type: "mobile" }, { name: "Admin dashboard", type: "web" }, { name: "Public landing page", type: "web" }], links: { github: null, live: "https://nobogeyofficial.com/", figma: null, behance: null, mobile: null, admin: null },
+      cover: nobogeyCover, gallery: ["/projects/nobogey-landing-page.jpg", "/projects/nobogey-golfer-app.jpg", "/projects/nobogey-caddie-app.jpg", "/projects/nobogey-admin-dashboard.jpg"],
+      caseStudy: {
+        overview: "A connected product system for golfers, caddies, and course teams: a public landing page, role-specific mobile experiences, and an admin operations dashboard.",
+        problem: "Booking a golf round with a caddie involves golfers, caddies, and course staff, so each group needs a clear view of the same workflow without losing role-specific context.",
+        goals: ["Clarify the golfer booking sequence", "Support caddie and course-team workflows", "Keep assignment expectations transparent", "Maintain a consistent design system across platforms"],
+        approach: "Mapped the service across four surfaces: a public landing page, a golfer flow from course to tee time to preferred caddie, a caddie dashboard, and an admin scheduler for course operations.",
+        solution: "Built responsive mobile and web interfaces with shared visual language, guided onboarding around real controls, and a booking summary that describes a named caddie as a preference rather than a guarantee.",
+        outcome: "Delivered a working frontend flow for review and testing. Current catalog and assignment data are fixture/mock-backed pending backend integration."
+      }, highlights: ["Public product landing page", "Golfer booking flow", "Caddie dashboard", "Admin scheduling dashboard", "Role-aware responsive UI"]
+    },
+    {
+      index: "02", title: "Mvolo — Shopify Financial ETL Pipeline", slug: "mvolo-shopify-etl", year: "2026", type: "DATA ENGINEERING / ANALYTICS", categories: ["DATA", "WEB"],
       tagline: "An API-based pipeline that turned manual Shopify financial reporting into dashboard-ready data.",
       description: "An internship project that extracted Shopify financial data, transformed it into profitability metrics, and loaded it into DuckDB for reporting in Mvolo Central Command Centre.",
       role: ["Data Analyst Intern", "Dashboard Developer"], technologies: ["Python", "Shopify API", "DuckDB", "JavaScript"],
@@ -60,25 +77,9 @@ export const portfolio = {
         solution: "Created a repeatable extract, transform, and load workflow for Shopify financial data. The resulting dataset supported revenue, profit, and margin reporting in the Mvolo Central Command Centre dashboard.",
         outcome: "Reduced manual data entry by 70% and gave the team a dashboard-ready data source for Shopify profitability reporting. This case study represents the internship implementation."
       }, highlights: ["Shopify API extraction", "Python data transformation", "DuckDB analytical storage", "Revenue, profit, and margin reporting", "70% reduction in manual entry"]
-    },
-    {
-      index: "02", title: "NoBogey — Multi-Platform Golf Caddie Booking System", slug: "nobogey-caddie-booking", year: "2026", type: "MULTI-PLATFORM PRODUCT", categories: ["MOBILE", "WEB", "UI"],
-      tagline: "A connected booking and operations experience for golfers, caddies, and course teams.",
-      description: "A multi-platform golf caddie booking system with a public landing page, golfer and caddie mobile experiences, and an admin dashboard for course operations.",
-      role: ["Frontend / Mobile Developer", "UI Implementation"], technologies: ["React Native", "Expo", "Expo Router", "TypeScript", "React", "Vite"],
-      platforms: [{ name: "Golfer mobile app", type: "mobile" }, { name: "Caddie mobile app", type: "mobile" }, { name: "Admin dashboard", type: "web" }, { name: "Public landing page", type: "web" }], links: { github: null, live: "https://nobogeyofficial.com/", figma: null, behance: null, mobile: null, admin: null },
-      cover: "/projects/nobogey-platform-ecosystem-cover.png", gallery: ["/projects/nobogey-landing-page.jpg", "/projects/nobogey-golfer-app.jpg", "/projects/nobogey-caddie-app.jpg", "/projects/nobogey-admin-dashboard.jpg"],
-      caseStudy: {
-        overview: "A connected product system for golfers, caddies, and course teams: a public landing page, role-specific mobile experiences, and an admin operations dashboard.",
-        problem: "Booking a golf round with a caddie involves golfers, caddies, and course staff, so each group needs a clear view of the same workflow without losing role-specific context.",
-        goals: ["Clarify the golfer booking sequence", "Support caddie and course-team workflows", "Keep assignment expectations transparent", "Maintain a consistent design system across platforms"],
-        approach: "Mapped the service across four surfaces: a public landing page, a golfer flow from course to tee time to preferred caddie, a caddie dashboard, and an admin scheduler for course operations.",
-        solution: "Built responsive mobile and web interfaces with shared visual language, guided onboarding around real controls, and a booking summary that describes a named caddie as a preference rather than a guarantee.",
-        outcome: "Delivered a working frontend flow for review and testing. Current catalog and assignment data are fixture/mock-backed pending backend integration."
-      }, highlights: ["Public product landing page", "Golfer booking flow", "Caddie dashboard", "Admin scheduling dashboard", "Role-aware responsive UI"]
     }
   ] satisfies Project[],
-  skillGroups: { DATA: ["Python", "SQL", "Power BI", "Excel", "Pandas", "Tableau"], DESIGN: ["Figma", "Canva", "Prototyping", "Design Systems", "Wireframing"], MOBILE: ["Flutter", "Dart", "Firebase", "React Native", "Expo"], WEB: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Node.js"], "AI TOOLS": ["Codex", "Claude Code", "Cursor", "Google Antigravity"], TOOLS: ["Git", "GitHub", "VS Code", "Supabase", "Google Sheets"] },
+  skillGroups: { "WEB & MOBILE": ["React Native", "Next.js", "TypeScript", "React", "Expo", "Supabase", "JavaScript", "Tailwind CSS", "Node.js", "Flutter", "Dart", "Firebase"], DATA: ["Python", "SQL", "Power BI", "Excel", "Pandas", "Tableau"], DESIGN: ["Figma", "Canva", "Prototyping", "Design Systems", "Wireframing"], "AI TOOLS": ["Codex", "Claude Code", "Cursor", "Google Antigravity"], TOOLS: ["Git", "GitHub", "VS Code", "Google Sheets"] },
   experience: [
     {
       period: "JANUARY 2026 — JULY 2026",

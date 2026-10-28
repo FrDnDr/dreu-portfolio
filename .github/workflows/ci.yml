@@ -62,4 +62,4 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         run: |
           echo "### Production" >> "$GITHUB_STEP_SUMMARY"
-          echo "[Open the deployed portfolio](https://dreu-portfolio.francisdreu.workers.dev)" >> "$GITHUB_STEP_SUMMARY"
+          echo "[Open the deployed portfolio](https://www.frdndr.com/)" >> "$GITHUB_STEP_SUMMARY"
