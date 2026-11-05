@@ -30,9 +30,9 @@ export type Experience = {
 };
 
 export const portfolio = {
-  version: "v4.3",
+  version: "v4.4",
   name: "Francis Daniel Dreu", shortName: "FRANCIS DREU", location: "THE PHILIPPINES", availability: "REMOTE OPPORTUNITIES",
-  email: "dreufrancisdaniel@gmail.com", phone: "09086993264", resume: "/Dreu-Francis-Daniel.pdf", githubUsername: "FrDnDr",
+  email: "dreufrancisdaniel@gmail.com", phone: "09086993264", resume: "/DREU-FRANCIS-DANIEL-RESUME.pdf", githubUsername: "FrDnDr",
   github: "https://github.com/FrDnDr", linkedin: "https://www.linkedin.com/in/fddreu", behance: "https://www.behance.net/francisdanieldreu",
   headline: ["FULL-STACK", "DEVELOPER.", "WEB & MOBILE."],
   intro: "I’m Francis, a full-stack developer building web and mobile products with React, Next.js, and React Native.",

@@ -5,3 +5,16 @@ dist/
 .env.example
 public/images
 documents/
+AGENTS.md
+public/projects
+taste/
+templates/
+tokens/
+workflows/
+accessibility/
+components/
+content/
+design-systems/
+examples/
+frameworks/
+scripts/
